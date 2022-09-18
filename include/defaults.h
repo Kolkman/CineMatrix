@@ -16,8 +16,9 @@
 #define WIFI_PASS "Elvis_in_Gerrit"   // / Not longer than 32 characters
 
 #define WEB_IP "192.168.122.1"
-#define WEB_NET "192.168.122.0" // should be the same NET as WEB_IP is in
+#define WEB_NETMASK "255.255.255.0" // should be the same NET as WEB_IP is in
                                 // Hardcoded as /24
+
 
 #define TEXTLENGTH 256 // Maximum length of text to be displayed
 

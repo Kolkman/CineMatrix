@@ -1,3 +1,4 @@
+// Wrapper for some authentication functions
 #include <Arduino.h>
 #include "MatrixWebServer.h"
 #include <ESPAsyncWebServer.h>
