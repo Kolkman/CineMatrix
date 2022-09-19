@@ -12,7 +12,7 @@
 
 #define DEFAULT_SPEED 75
 
-#define WIFI_SSID "ESP32_MATRIX" // Not longer than 32 characters
+#define WIFI_SSID "ESP32_CINEMATRIX" // Not longer than 32 characters
 #define WIFI_PASS "Elvis_in_Gerrit"   // / Not longer than 32 characters
 
 #define WEB_IP "192.168.122.1"
@@ -22,6 +22,6 @@
 
 #define TEXTLENGTH 256 // Maximum length of text to be displayed
 
-#define MAXTEXTS 5 // Amount of different sentences to display
+#define MAXTEXTELEMENTS 5 // Amount of different sentences to display
 
 #endif

@@ -5,17 +5,18 @@
 
 MatrixConfig::MatrixConfig()
 {
+    defaultPASS = true;
     strcpy(wifiSSID, WIFI_SSID);
     strcpy(wifiPASS, WIFI_PASS);
-    for (int i = 0; i < MAXTEXTS; i++)
+    for (int i = 0; i < MAXTEXTELEMENTS; i++)
     {
         strcpy(element[i].text, "");
         element[i].effect = PA_SCROLL_LEFT;
         element[i].position = PA_RIGHT;
         element[i].speed = DEFAULT_SPEED;
-        element[i].repeat=0;
+        element[i].repeat = 1;
     }
-    // Default 
+    // Default
     strcpy(element[0].text, "Please connect to the following network: ");
     strcat(element[0].text, WIFI_SSID);
     strcpy(element[1].text, "The WIFI Password is: ");
@@ -23,8 +24,8 @@ MatrixConfig::MatrixConfig()
 
     strcpy(element[2].text, "Please connect to ");
     strcat(element[2].text, WEB_IP);
-    strcat(element[2].text, " and make sure you reconfigure your WIFI SSID and PASSWORD!");
-    
+
+
     Serial.println(element[0].text);
 }
 bool MatrixConfig::prepareFS()
@@ -62,11 +63,63 @@ bool MatrixConfig::loadConfig()
     ReadLoggingStream loggingStream(configFile, Serial);
 
     DeserializationError parsingError = deserializeJson(jsonDocument, loggingStream);
+    Serial.println("");
     if (parsingError)
     {
+
         Serial.println("Failed to deserialize json config file");
         Serial.println(parsingError.c_str());
         return false;
+    }
+
+    {
+        strncpy(wifiSSID, jsonDocument["wifiSSID"], 32);
+        wifiSSID[33] = '\0';
+    }
+    if (jsonDocument["wifiPASS"])
+    {
+        Serial.print("Config file WifiPass:");
+
+        strncpy(wifiPASS, jsonDocument["wifiPASS"], 32);
+        wifiPASS[33] = '\0';
+        Serial.println(wifiPASS);
+    }
+    if (strcmp(wifiPASS, WIFI_PASS)) // Comparing variable to define
+    {
+
+        defaultPASS = false;
+
+        // Only use texts if the default password is not set.
+        int cntr = 0;
+        for (JsonObject el : jsonDocument["elements"].as<JsonArray>())
+        {
+            // we should check for corruption, but alas.
+            if (cntr < MAXTEXTELEMENTS)
+            {
+
+                element[cntr].effect = (textEffect_t)el["effect"].as<int>();
+                element[cntr].position = (textPosition_t)el["position"].as<int>();
+                element[cntr].repeat = el["repeat"].as<int>();
+                element[cntr].speed = el["speed"].as<int>();
+                strncpy(element[cntr].text, el["text"].as<const char *>(), TEXTLENGTH);
+            }
+            cntr++;
+        }
+
+        if (!strncmp(element[0].text, "Please connect to the following network: ", 41))
+        {
+            strcpy(element[0].text, "Connect to the network you configured");
+        }
+        if (!strncmp(element[1].text, "The WIFI Password is: ", 21))
+        {
+            strcpy(element[1].text, "");
+        }
+    }
+    else
+    {
+
+        Serial.println("DEFAULT WIFI PASSWORD");
+        defaultPASS = true;
     }
 
     return true;
@@ -80,17 +133,15 @@ bool MatrixConfig::saveConfig()
     root["wifiPASS"] = wifiPASS;
 
     JsonArray elements = root.createNestedArray("elements");
-    for (int i=0; i<MAXTEXTS; i++){
-            JsonObject elmnt = elements.createNestedObject();
-            elmnt["text"] = element[i].text;
-            elmnt["effect"] = element[i].effect;
-            elmnt["position"] = element[i].position;
-            elmnt["speed"] = element[i].speed;
-
+    for (int i = 0; i < MAXTEXTELEMENTS; i++)
+    {
+        JsonObject elmnt = elements.createNestedObject();
+        elmnt["text"] = element[i].text;
+        elmnt["effect"] = element[i].effect;
+        elmnt["position"] = element[i].position;
+        elmnt["speed"] = element[i].speed;
+        elmnt["repeat"] = element[i].repeat;
     }
-
-
-
 
     File configFile = LittleFS.open("/config.json", "w", true);
     if (!configFile)

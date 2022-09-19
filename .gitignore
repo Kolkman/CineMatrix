@@ -5,3 +5,7 @@
 .vscode/ipch
 
 .DS_Store
+src/webInterface.cpp
+.vscode/extensions.json
+.vscode/ltex.hiddenFalsePositives.en-US.txt
+.vscode/settings.json

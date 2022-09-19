@@ -16,7 +16,7 @@
 // Globals
 MD_Parola Display = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 MatrixState myState;
-WebInterface myInterface;
+WebInterface myInterface(&myState.myConfig);
 
 void setup()
 {
@@ -47,6 +47,9 @@ void setup()
         Display.displayScroll(myState.getText(), myState.getPosition(), myState.getEffect(), myState.getSpeed());
         // State setup not needed, done by the innitiator
     }
+
+    Serial.println( myInterface.myConfig->element[0].text);
+
 
     {
         IPAddress ip, netmask;

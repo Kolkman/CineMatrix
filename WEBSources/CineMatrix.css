@@ -1,13 +1,12 @@
 body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size:large;
-    background: #626262;
-    color: antiquewhite;
+    background: #dcdee4;
+    color:  black;
 }
 
 html,
 body {
-    margin: 0;
+    margin: 0.5em;
     height: 100%;
 }
 
@@ -37,4 +36,93 @@ h1 {
     margin-bottom: 1em;
     text-align:center;
 
+}
+.matrixform .warning {
+    color: cornsilk;
+    background-color: azure;
+    font-size:x-large;
+    color: rgb(183, 67, 67);
+}
+
+.wifientry {
+    margin: 5px;
+    padding: 20px;
+    background-color: rgb(59, 57, 86);
+    border: 2px solid rgb(141, 15, 17);
+}
+.wifiinput {
+    color: cornsilk;
+    display:inline-block;
+}
+.wifilabel  {
+    display: inline-block;
+}
+.wififield  {
+    display: inline-block;
+}
+.wifilabel label {
+    width: 20em;
+}
+
+.matrixentry{
+    color: cornsilk;
+    background-color: rgb(59, 57, 86);
+    border: 2px solid rgb(141, 15, 17);
+    margin: 10px;
+    padding: 5px;
+
+}
+.matrixentry .textentry {
+    display: block;
+}
+
+.matrixentry .inputblock {
+    display: inline-block;
+}
+
+.matrixentry label{
+    vertical-align: top ;
+}
+.matrixentry select {
+    vertical-align: middle;
+
+}
+
+textarea {
+    height: 5em;
+    width: 97%;
+}
+
+.submitbutton{
+    padding: 10px;
+    padding-bottom: 30px;
+}
+#advancedbutton{
+    margin-left:10px;
+    margin-bottom:10px;
+}
+.firmware {
+    border-top: 2px dotted grey;
+    font-size: x-small;
+    color: grey;
+}
+
+textarea{
+    font-family:'Courier New', Courier, monospace;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+     border-radius: 20px;
+     border: 1px solid #2d9fd9;
+color: rgb(42, 40, 40);
+     padding-left: 10px;
+     font-size: large;
+     width: 95%;
+    }
+    
+textarea:focus {
+     outline: none;
+     font-style: bold;
+     border: 1px solid #a0d18c;
+     color: #3c1605;
+     background-color: lightgrey;
 }

@@ -10,6 +10,7 @@ public:
     MatrixState();
     char * getText();
     bool init();
+    MatrixConfig myConfig;  
     textPosition_t getPosition();
     textEffect_t getEffect();
     uint16_t getSpeed();
@@ -19,7 +20,7 @@ public:
 private:
     int elementID;
     int elementItterator=0;
-    MatrixConfig myConfig;
+
 };
 
 #endif

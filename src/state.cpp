@@ -45,8 +45,8 @@ bool MatrixState::stateChange()
     if (elementItterator < myConfig.element[elementID].repeat ){
         elementItterator++;
     }else{
-        elementItterator=0;
-        if (elementID<MAXTEXTS){
+        elementItterator=1;
+        if (elementID<MAXTEXTELEMENTS){
             elementID++;
         }else{
             elementID=0;

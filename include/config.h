@@ -2,7 +2,7 @@
 #define MatrixCONFIG_H
 
 #include"defaults.h"
-
+#define CURRENTFIRMWARE "CineMatrix-1.0.0"
 #define CONFIG_BUF_SIZE 2048
 #define FORMAT_SPIFFS_IF_FAILED true
 #ifndef DEFAULT_SPEED
@@ -14,13 +14,13 @@
 #include <MD_Parola.h>
 
 // WifiManager related config
-
+/*
 typedef struct
 {
     char wifi_ssid[33];
     char wifi_pw[33];
 } WiFi_Credentials;
-
+*/
 typedef struct
 // Eenumps from 
 {
@@ -40,11 +40,12 @@ public:
     MatrixConfig();
     char wifiSSID[33];
     char wifiPASS[33];
+    bool defaultPASS;
     bool prepareFS();
     bool loadConfig();  // load current config to disk (limited set of vallues)
     bool saveConfig();  // save current config to disk (limited set of vallues)
     void resetConfig(); // resetConfig to values that were programmed by default
-    textelements element[MAXTEXTS];
+    textelements element[MAXTEXTELEMENTS];
 };
 
 #endif
