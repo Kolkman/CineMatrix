@@ -95,48 +95,48 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
           {PA_RIGHT, "RIGHT"}};
   struct EffectStruct_t EffectEntry[] =
   {
-    {PA_NO_EFFECT, "NO_EFFECT"},       // "Used as a place filler executes no operation"
-    {PA_PRINT, "PRINT"},               //  "Text just appears (printed)"
-    {PA_SCROLL_UP, "SCROLL_UP"},       //  "Text scrolls up through the display"
-    {PA_SCROLL_DOWN, "SCROLL_DOWN"},   //  "Text scrolls down through the display"
-    {PA_SCROLL_LEFT, "SCROLL_LEFT"},   //  "Text scrolls right to left on the display"
-    {PA_SCROLL_RIGHT, "SCROLL_RIGHT"}, //  "Text scrolls left to right on the display"
+    {PA_NO_EFFECT, "No Effect"},       // "Used as a place filler executes no operation"
+    {PA_PRINT, "Print"},               //  "Text just appears (printed)"
+    {PA_SCROLL_UP, "Scroll Up"},       //  "Text scrolls up through the display"
+    {PA_SCROLL_DOWN, "Scroll Down"},   //  "Text scrolls down through the display"
+    {PA_SCROLL_LEFT, "Scroll Left"},   //  "Text scrolls right to left on the display"
+    {PA_SCROLL_RIGHT, "Scroll Right"}, //  "Text scrolls left to right on the display"
 #if ENA_SPRITE
-    {PA_SPRITE, "SPRITE"}, //  "Text enters and exits using user defined sprite"
+    {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-    {PA_SLICE, "SLICE"},       //  "Text enters and exits a slice (column) at a time from the right"
-    {PA_MESH, "MESH"},         //  "Text enters and exits in columns moving in alternate direction (U/D)"
-    {PA_FADE, "FADE"},         //  "Text enters and exits by fading from/to 0 and intensity setting"
-    {PA_DISSOLVE, "DISSOLVE"}, //  "Text dissolves from one display to another"
-    {PA_BLINDS, "BLINDS"},     //  "Text is replaced behind vertical blinds"
-    {PA_RANDOM, "RANDOM"},     //  "Text enters and exits as random dots"
+    {PA_SLICE, "Slice"},       //  "Text enters and exits a slice (column) at a time from the right"
+    {PA_MESH, "Mesh"},         //  "Text enters and exits in columns moving in alternate direction (U/D)"
+    {PA_FADE, "Fade"},         //  "Text enters and exits by fading from/to 0 and intensity setting"
+    {PA_DISSOLVE, "Dissolve"}, //  "Text dissolves from one display to another"
+    {PA_BLINDS, "Blinds"},     //  "Text is replaced behind vertical blinds"
+    {PA_RANDOM, "Random dots"},     //  "Text enters and exits as random dots"
 #endif                         // ENA_MISC
 #if ENA_WIPE
-    {PA_WIPE, "WIPE"},               // "Text appears disappears one column at a time, looks like it is wiped on and off"
-    {PA_WIPE_CURSOR, "WIPE_CURSOR"}, //  "WIPE with a light bar ahead of the change"
+    {PA_WIPE, "Wipe"},               // "Text appears disappears one column at a time, looks like it is wiped on and off"
+    {PA_WIPE_CURSOR, "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
 #endif                               // ENA_WIPES
 #if ENA_SCAN
-    {PA_SCAN_HORIZ, "SCAN_HORIZ"},   //  "Scan the LED column one at a time then appears/disappear at end"
-    {PA_SCAN_HORIZX, "SCAN_HORIZX"}, //  "Scan a blank column through the text one column at a time then appears/disappear at end"
-    {PA_SCAN_VERT, "SCAN_VERT"},     //  "Scan the LED row one at a time then appears/disappear at end"
-    {PA_SCAN_VERTX, "SCAN_VERTX"},   //  "Scan a blank row through the text one row at a time then appears/disappear at end"
+    {PA_SCAN_HORIZ, "Scan Horizontal led"},   //  "Scan the LED column one at a time then appears/disappear at end"
+    {PA_SCAN_HORIZX, "Scan Horizontal blank"}, //  "Scan a blank column through the text one column at a time then appears/disappear at end"
+    {PA_SCAN_VERT, "Scan Vertical led"},     //  "Scan the LED row one at a time then appears/disappear at end"
+    {PA_SCAN_VERTX, "Scan Vertical blank"},   //  "Scan a blank row through the text one row at a time then appears/disappear at end"
 #endif                               // ENA_SCAN
 #if ENA_OPNCLS
-    {PA_OPENING, "OPENING"},               // "Appear and disappear from the center of the display},  towards the ends"
-    {PA_OPENING_CURSOR, "OPENING_CURSOR"}, //  "OPENING with light bars ahead of the change"
-    {PA_CLOSING, "CLOSING"},               // "Appear and disappear from the ends of the display}, towards the middle"
-    {PA_CLOSING_CURSOR, "CLOSING_CURSOR"}, //  "CLOSING with light bars ahead of the change"
+    {PA_OPENING, "Opening"},               // "Appear and disappear from the center of the display},  towards the ends"
+    {PA_OPENING_CURSOR, "Opening Cursor"}, //  "OPENING with light bars ahead of the change"
+    {PA_CLOSING, "Closing"},               // "Appear and disappear from the ends of the display}, towards the middle"
+    {PA_CLOSING_CURSOR, "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
 #endif                                     // ENA_OPNCLS
 #if ENA_SCR_DIA
-    {PA_SCROLL_UP_LEFT, "SCROLL_UP_LEFT"},       //  "Text moves in/out in a diagonal path up and left (North East)"
-    {PA_SCROLL_UP_RIGHT, "SCROLL_UP_RIGHT"},     //  "Text moves in/out in a diagonal path up and right (North West)"
-    {PA_SCROLL_DOWN_LEFT, "SCROLL_DOWN_LEFT"},   //  "Text moves in/out in a diagonal path down and left (South East)"
-    {PA_SCROLL_DOWN_RIGHT, "SCROLL_DOWN_RIGHT"}, //  "Text moves in/out in a diagonal path down and right (North West)"
+    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},       //  "Text moves in/out in a diagonal path up and left (North East)"
+    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"},     //  "Text moves in/out in a diagonal path up and right (North West)"
+    {PA_SCROLL_DOWN_LEFT, "Scrol Down&Left"},   //  "Text moves in/out in a diagonal path down and left (South East)"
+    {PA_SCROLL_DOWN_RIGHT, "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and right (North West)"
 #endif                                           // ENA_SCR_DIA
 #if ENA_GROW
-    {PA_GROW_UP, "GROW_UP"},    //  "Text grows from the bottom up and shrinks from the top down"
-    {PA_GROW_DOWN, "GROW_DOWN"} // "Text grows from the top down and and shrinks from the bottom up"}
+    {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks from the top down"
+    {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and shrinks from the bottom up"}
 #endif                          // ENA_
   };
 

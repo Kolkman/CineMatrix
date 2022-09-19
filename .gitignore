@@ -9,3 +9,7 @@ src/webInterface.cpp
 .vscode/extensions.json
 .vscode/ltex.hiddenFalsePositives.en-US.txt
 .vscode/settings.json
+include/pages/CineMatrix.css.h
+WEBSources/CineMatrix-min.css
+WEBSources/test-min.html
+WEBSources/test.html
