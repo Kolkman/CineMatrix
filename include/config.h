@@ -7,6 +7,7 @@
 #define FORMAT_SPIFFS_IF_FAILED true
 #ifndef DEFAULT_SPEED
 #define DEFAULT_SPEED 100
+#define ELEGANT_OTA false
 #endif
 
 

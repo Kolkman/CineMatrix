@@ -10,7 +10,7 @@ A matrix display driver that is configurable through a web interface.
 ## How to use
 Connect your ESP-32 Dev Kit C to your MAX72XX Matrix array: the following defaults: DATA_PIN 25, CS_PIN 26, CLK_PIN 27. Make sure tho select the 5V terminal on the ESP32 and connect ground to a ground terminal.
 
-After powering up the ESP32 it will set up a wireless access point. The display will show its name and password on first start up and print some instructions on how to connect your browser.
+After powering up the ESP32 it will set up a wireless access point. The matrix display will show its name and password on first start up and print some instructions on how to connect your browser.
 
 
 

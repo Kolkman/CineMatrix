@@ -1,8 +1,15 @@
 #include "webInterface.h"
 #include "config.h"
 #include <Arduino.h>
-#include <AsyncElegantOTA.h>
+
 #include "pages/CineMatrix.css.h"
+#ifdef ELEGANT_OTA
+#include <AsyncElegantOTA.h>
+#else
+#include "webInterfaceOTAUpdate.h"
+#endif
+
+
 
 WebInterface::WebInterface(MatrixConfig *config, const char *username, const char *password)
 {
@@ -44,7 +51,12 @@ void WebInterface::setupWebSrv()
   // from the various include/pages/*.h files come the following definitions.
   DEF_HANDLE_CineMatrix_css;
 
+
+#ifdef ELEGANT_OTA
   AsyncElegantOTA.begin(server);
+#else
+  webOTAUpdate.begin(server);
+#endif
 
   server->begin();
   Serial.println("HTTP server started");

@@ -3,7 +3,7 @@
 ### Make to manipulate webpages.
 ### Note that code relies on MinifyAll extension to first minify the raw source
 
-all:include/pages/CineMatrix.css.h 
+all:include/pages/CineMatrix.css.h include/pages/update.html.h
 	@exec true 
 
 
