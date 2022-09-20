@@ -6,9 +6,7 @@
 #endif
 
 #include"defaults.h"
-#ifndef CURRENTFIRMWARE
-#define CURRENTFIRMWARE "undef"
-#endif
+
 #define CONFIG_BUF_SIZE 2048
 #define FORMAT_SPIFFS_IF_FAILED true
 #ifndef DEFAULT_SPEED

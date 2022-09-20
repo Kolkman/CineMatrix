@@ -64,7 +64,7 @@ void setup()
         delay(100);
     }
     Serial.print ("Starting with firmwareversion: ");
-    Serial.println (CURRENTFIRMWARE);
+    Serial.println (FIRMWAREVERSION);
 
     Serial.println(WiFi.localIP());
 

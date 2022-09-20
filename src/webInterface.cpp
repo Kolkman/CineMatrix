@@ -250,7 +250,7 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
     message += "<div id=\"advancedbutton\"> <button onclick=\"indexButton()\">Back</button><script>function indexButton() {  location.replace(\"/index.html\")}</script></div>";
   }
 
-  message += "<div class=\"firmware\"> Firmware version: " + String(CURRENTFIRMWARE) + " - " + String(F(__DATE__)) + ":" + String(F(__TIME__)) + "</div>";
+  message += "<div class=\"firmware\"> Firmware version: " + String(FIRMWAREVERSION) + " - " + String(F(__DATE__)) + ":" + String(F(__TIME__)) + "</div>";
 
   message += htmlFooter;
   request->send(200, "text/html", message);
