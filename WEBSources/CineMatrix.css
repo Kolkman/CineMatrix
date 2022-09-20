@@ -105,6 +105,7 @@ textarea {
     border-top: 2px dotted grey;
     font-size: x-small;
     color: grey;
+    margin-top: 20px;
 }
 
 textarea{

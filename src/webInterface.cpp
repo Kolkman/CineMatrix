@@ -105,23 +105,23 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
     {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-    {PA_SLICE, "Slice"},       //  "Text enters and exits a slice (column) at a time from the right"
-    {PA_MESH, "Mesh"},         //  "Text enters and exits in columns moving in alternate direction (U/D)"
-    {PA_FADE, "Fade"},         //  "Text enters and exits by fading from/to 0 and intensity setting"
-    {PA_DISSOLVE, "Dissolve"}, //  "Text dissolves from one display to another"
-    {PA_BLINDS, "Blinds"},     //  "Text is replaced behind vertical blinds"
-    {PA_RANDOM, "Random dots"},     //  "Text enters and exits as random dots"
-#endif                         // ENA_MISC
+    {PA_SLICE, "Slice"},        //  "Text enters and exits a slice (column) at a time from the right"
+    {PA_MESH, "Mesh"},          //  "Text enters and exits in columns moving in alternate direction (U/D)"
+    {PA_FADE, "Fade"},          //  "Text enters and exits by fading from/to 0 and intensity setting"
+    {PA_DISSOLVE, "Dissolve"},  //  "Text dissolves from one display to another"
+    {PA_BLINDS, "Blinds"},      //  "Text is replaced behind vertical blinds"
+    {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
+#endif                          // ENA_MISC
 #if ENA_WIPE
     {PA_WIPE, "Wipe"},               // "Text appears disappears one column at a time, looks like it is wiped on and off"
     {PA_WIPE_CURSOR, "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
 #endif                               // ENA_WIPES
 #if ENA_SCAN
-    {PA_SCAN_HORIZ, "Scan Horizontal led"},   //  "Scan the LED column one at a time then appears/disappear at end"
+    {PA_SCAN_HORIZ, "Scan Horizontal led"},    //  "Scan the LED column one at a time then appears/disappear at end"
     {PA_SCAN_HORIZX, "Scan Horizontal blank"}, //  "Scan a blank column through the text one column at a time then appears/disappear at end"
-    {PA_SCAN_VERT, "Scan Vertical led"},     //  "Scan the LED row one at a time then appears/disappear at end"
-    {PA_SCAN_VERTX, "Scan Vertical blank"},   //  "Scan a blank row through the text one row at a time then appears/disappear at end"
-#endif                               // ENA_SCAN
+    {PA_SCAN_VERT, "Scan Vertical led"},       //  "Scan the LED row one at a time then appears/disappear at end"
+    {PA_SCAN_VERTX, "Scan Vertical blank"},    //  "Scan a blank row through the text one row at a time then appears/disappear at end"
+#endif                                         // ENA_SCAN
 #if ENA_OPNCLS
     {PA_OPENING, "Opening"},               // "Appear and disappear from the center of the display},  towards the ends"
     {PA_OPENING_CURSOR, "Opening Cursor"}, //  "OPENING with light bars ahead of the change"
@@ -130,8 +130,8 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
 #endif                                     // ENA_OPNCLS
 #if ENA_SCR_DIA
     {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},       //  "Text moves in/out in a diagonal path up and left (North East)"
-    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"},     //  "Text moves in/out in a diagonal path up and right (North West)"
-    {PA_SCROLL_DOWN_LEFT, "Scrol Down&Left"},   //  "Text moves in/out in a diagonal path down and left (South East)"
+    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"},      //  "Text moves in/out in a diagonal path up and right (North West)"
+    {PA_SCROLL_DOWN_LEFT, "Scrol Down&Left"},    //  "Text moves in/out in a diagonal path down and left (South East)"
     {PA_SCROLL_DOWN_RIGHT, "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and right (North West)"
 #endif                                           // ENA_SCR_DIA
 #if ENA_GROW
@@ -211,7 +211,7 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
 
     message += " <div class=\"submitbutton\"> <input type=\"submit\" value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
-    message += "<div id=\"advancedbutton\"> <button onclick=\"myFunction3()\">Wifi Configuration</button><script>function myFunction3() {  location.replace(\"/index.html?wificonfig\")}</script></div>";
+    message += "<div id=\"advancedbutton\"> <button onclick=\"advancedButton()\">Advanced Configuration</button><script>function advancedButton() {  location.replace(\"/index.html?wificonfig\")}</script></div>";
   }
   else
   {
@@ -230,14 +230,15 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
     message += "<div class=\"wififield\"><input id=\"pas\" name=\"pass\" maxlength=32  value=\"" + String(myConfig->wifiPASS) + "\" ></div><!-- div class=wififield -->\n";
     message += "</div> <!-- div  class=wifiinput -->\n";
     message += "</div><!--div class=wifientry -->\n";
-
     message += " <div class=\"submitbutton\"> <input type=\"submit\" value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
-  if (!myConfig->defaultPASS)
-    message += "<div id=\"advancedbutton\"> <button onclick=\"myFunction5()\">Back</button><script>function myFunction5() {  location.replace(\"/index.html\")}</script></div>";
+    if (!myConfig->defaultPASS)
+      message += "<div id=\"advancedbutton\"> <button onclick=\"updateButton()\">Update</button><script>function updateButton() {  location.replace(\"/update\")}</script></div>";
+
+    message += "<div id=\"advancedbutton\"> <button onclick=\"indexButton()\">Back</button><script>function indexButton() {  location.replace(\"/index.html\")}</script></div>";
   }
 
-    message += "<div class=\"firmware\"> Firmware version: " + String(CURRENTFIRMWARE) + " - " + String(F(__DATE__)) + ":" + String(F(__TIME__)) + "</div>";
+  message += "<div class=\"firmware\"> Firmware version: " + String(CURRENTFIRMWARE) + " - " + String(F(__DATE__)) + ":" + String(F(__TIME__)) + "</div>";
 
   message += htmlFooter;
   request->send(200, "text/html", message);
@@ -335,11 +336,11 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request)
     message += "<tr><td>WiFi Password</td><td>" + String(myConfig->wifiPASS) + "</td></tr>\n";
     message += "</table> </div>\n";
 
-    message += " <button onclick=\"myFunction1()\">Reset</button><script>function myFunction1() {  location.replace(\"/reset\")}</script></div>";
+    message += " <button onclick=\"resetButton()\">Reset</button><script>function resetButton() {  location.replace(\"/reset\")}</script></div>";
   }
   else
   {
-    message += " <button onclick=\"myFunction2()\">Back Home</button><script>function myFunction2() {  location.replace(\"/index.html\")}</script>";
+    message += " <button onclick=\"indexButton()\">Back Home</button><script>function indexButton() {  location.replace(\"/index.html\")}</script>";
   }
   message += htmlFooter;
   request->send(200, "text/html", message);
