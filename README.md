@@ -1,4 +1,8 @@
 # Matrix Display Web Server
+<center>
+<img src="WEBSources/MatrixDisplay.png" alt="Desktop Screeenshot" width=65% />
+</center>
+
 
 ## What is it
 A matrix display driver that is configurable through a web interface.
@@ -17,11 +21,13 @@ The security is based on the ability to connect to the access point and thus on 
 
 ## Acknowledgements
 
-This code was developed for [Filmtheater Gerrit](http://filmtheater-gerrit.nl). It relies heavily on [the Parola for Arduino Library](https://majicdesigns.github.io/MD_Parola/index.html)
+This code was developed for [Filmtheater Gerrit](http://filmtheater-gerrit.nl) on Visual Studio Code for Mac OS X with PlatformIO. It relies heavily on [the Parola for Arduino Library](https://majicdesigns.github.io/MD_Parola/index.html) and borrows code fragment from [ESP32ressoMachine](https://kolkman.github.io/ESP32ressoMachine/), one of my other projects.
 
 
+## Screenshots
 
-
+<img src="WEBSources/Screenshot-desktop.png" alt="Desktop Screeenshot" width=65% />
+<img src="WEBSources/Screenshot-iphone.png" alt="iPhone Screenshot" width=30% />
 
 
 
