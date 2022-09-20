@@ -24,7 +24,7 @@ def post_program_action(source, target, env):
     mkdir_command = "mkdir -p CineMatrixFirmware-"+version
     cp_command = "cp .pio/build/esp32dev-prod/firmware.bin  $PROJECT_PACKAGES_DIR/framework-arduinoespressif32/tools/sdk/esp32/bin/bootloader_dio_40m.bin " +\
         "$PROJECT_PACKAGES_DIR/framework-arduinoespressif32/tools/partitions/boot_app0.bin  .pio/build/esp32dev-prod/partitions.bin CineMatrixFirmware-"+version+"/"
-    tar_cmnd=   "tar -cvzf $PROJECT_DIR/CineMatrixFirmware-"+version+".tarz  ./CineMatrixFirmware-"+version
+    tar_cmnd=   "tar -cvzf $PROJECT_DIR/CineMatrixFirmware-"+version+".tar.gz  ./CineMatrixFirmware-"+version
 
     env.Execute(mkdir_command)
     env.Execute(cp_command)
