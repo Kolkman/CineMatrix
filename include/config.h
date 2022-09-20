@@ -1,8 +1,12 @@
 #ifndef MatrixCONFIG_H
 #define MatrixCONFIG_H
 
+#ifndef FIRMWAREVERSION
+#define FIRMWAREVERSION "not-set"
+#endif
+
 #include"defaults.h"
-#define CURRENTFIRMWARE "CineMatrix-1.0.0"
+#define CURRENTFIRMWARE "CineMatrix-"FIRMWAREVERSION
 #define CONFIG_BUF_SIZE 2048
 #define FORMAT_SPIFFS_IF_FAILED true
 #ifndef DEFAULT_SPEED
