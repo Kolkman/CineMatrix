@@ -1,8 +1,6 @@
 ![GitHub release (release name instead of tag name)](https://img.shields.io/github/v/release/kolkman/cinematrix?include_prereleases)
 ![GitHub issues](https://img.shields.io/github/issues/kolkman/cinematrix)
 
-# ESPAsync_WiFiManager
-
 # CineMatrix Display Web Server
 <center>
 <img src="WEBSources/MatrixDisplay.png" alt="Desktop Screeenshot" width=65% />
