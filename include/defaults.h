@@ -10,7 +10,7 @@
 #define CLK_PIN 27
 
 
-#define DEFAULT_SPEED 75
+#define DEFAULT_SPEED 40
 
 #define WIFI_SSID "ESP32_CINEMATRIX" // Not longer than 32 characters
 #define WIFI_PASS "Elvis_in_Gerrit"   // / Not longer than 32 characters

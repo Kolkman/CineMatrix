@@ -17,13 +17,14 @@ MatrixConfig::MatrixConfig()
         element[i].repeat = 1;
     }
     // Default
-    strcpy(element[0].text, "Please connect to the following network: ");
+    strcpy(element[0].text, "Connect to Wifi network ");
     strcat(element[0].text, WIFI_SSID);
     strcpy(element[1].text, "The WIFI Password is: ");
     strcat(element[1].text, WIFI_PASS);
 
-    strcpy(element[2].text, "Please connect to ");
+    strcpy(element[2].text, "Browse to http:://");
     strcat(element[2].text, WEB_IP);
+    strcat(element[2].text,"/");
 
 
     Serial.println(element[0].text);

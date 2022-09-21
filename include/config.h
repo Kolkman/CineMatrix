@@ -10,7 +10,7 @@
 #define CONFIG_BUF_SIZE 2048
 #define FORMAT_SPIFFS_IF_FAILED true
 #ifndef DEFAULT_SPEED
-#define DEFAULT_SPEED 100
+#define DEFAULT_SPEED 75
 #define ELEGANT_OTA false
 #endif
 

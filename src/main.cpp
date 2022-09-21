@@ -10,14 +10,11 @@
 #include "webInterface.h"
 #include <WiFi.h>
 
-
-
-
 // Sprite Definitions
 const uint8_t F_MOVIE = 1;
 const uint8_t W_MOVIE = 100;
 const uint8_t PROGMEM movie[F_MOVIE * W_MOVIE] =  // gobbling pacman animation
-{
+    {
  0x81, 0x3c, 0xBD, 0x3C, 0xBD, 0x3c, 0xBD, 0x3C, 0xBD, 0x3C,
  0x81, 0x3c, 0xBD, 0x3C, 0xBD, 0x3c, 0xBD, 0x3C, 0xBD, 0x3C,
  0x81, 0x3c, 0xBD, 0x3C, 0xBD, 0x3c, 0xBD, 0x3C, 0xBD, 0x3C,
@@ -30,17 +27,12 @@ const uint8_t PROGMEM movie[F_MOVIE * W_MOVIE] =  // gobbling pacman animation
  0x81, 0x3c, 0xBD, 0x3C, 0xBD, 0x3c, 0xBD, 0x3C, 0xBD, 0x3C,
 
 };
-
 
 const uint8_t F_EMPTY = 1;
 const uint8_t W_EMPTY = 1;
-const uint8_t PROGMEM empty[F_EMPTY * W_EMPTY] =  // gobbling pacman animation
-{
- 0
-};
-
-
-
+const uint8_t PROGMEM empty[F_EMPTY * W_EMPTY] = // gobbling pacman animation
+    {
+        0};
 
 #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
 //#define HARDWARE_TYPE MD_MAX72XX::GENERIC_H
@@ -49,6 +41,7 @@ const uint8_t PROGMEM empty[F_EMPTY * W_EMPTY] =  // gobbling pacman animation
 MD_Parola Display = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 MatrixState myState;
 WebInterface myInterface(&myState.myConfig);
+char firmwareString[50];
 
 void setup()
 {
@@ -63,36 +56,11 @@ void setup()
         Serial.println(")");
         delay(100);
     }
-    Serial.print ("Starting with firmwareversion: ");
-    Serial.println (FIRMWAREVERSION);
+    Serial.print("Starting with firmwareversion: ");
+    Serial.println(FIRMWAREVERSION);
 
     Serial.println(WiFi.localIP());
 
-    Display.begin();
-    Display.setIntensity(0);
-    Display.displayClear();
-
-    if (!myState.init())
-    {
-        Display.displayScroll("Init Error: filesystem problems", PA_RIGHT, PA_SCROLL_LEFT, 50);
-    }
-    else
-    {
-        Display.displayScroll(myState.getText(), myState.getPosition(), myState.getEffect(), myState.getSpeed());
-        // State setup not needed, done by the innitiator
-    }
-
-    Serial.println( myInterface.myConfig->element[0].text);
-
-
-    {
-        IPAddress ip, netmask;
-        ip.fromString(WEB_IP);
-        netmask.fromString(WEB_NETMASK);
-        WiFi.softAPConfig(ip, ip, netmask);
-    }
-    
-  
     // Print ESP Local IP Address
     Serial.print("Setting up WIFI with SSID:");
     Serial.print(myState.getWifiSSID());
@@ -100,7 +68,32 @@ void setup()
     Serial.println(myState.getWifiPass());
     WiFi.softAP(myState.getWifiSSID(), myState.getWifiPass());
     myInterface.setupWebSrv();
-  
+
+    Display.begin();
+    Display.setIntensity(0);
+    Display.displayClear();
+    Display.setSpriteData(movie, W_MOVIE, F_MOVIE, empty, W_EMPTY, F_EMPTY);
+
+    if (!myState.init())
+    {
+        Display.displayScroll("Init Error: filesystem problems", PA_RIGHT, PA_SCROLL_LEFT, 200);
+    }
+    else
+    {
+        strcpy (firmwareString, "Version ");
+        strcat(firmwareString, FIRMWAREVERSION);
+        Serial.println(firmwareString);
+        // Display.displayScroll(myState.getText(), myState.getPosition(), myState.getEffect(), myState.getSpeed());
+        Display.displayScroll(firmwareString, PA_CENTER, PA_SPRITE, 50);
+        // State setup not needed, done by the innitiator
+    }
+
+    {
+        IPAddress ip, netmask;
+        ip.fromString(WEB_IP);
+        netmask.fromString(WEB_NETMASK);
+        WiFi.softAPConfig(ip, ip, netmask);
+    }
 }
 
 void loop()
@@ -110,8 +103,6 @@ void loop()
     {
         myState.stateChange();
         Display.displayClear();
-        Display.setSpriteData(movie, W_MOVIE, F_MOVIE, empty, W_EMPTY, F_EMPTY);
         Display.displayScroll(myState.getText(), myState.getPosition(), myState.getEffect(), myState.getSpeed());
-
     }
 }
