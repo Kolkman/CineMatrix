@@ -4,13 +4,13 @@ Import("env", "projenv")
 
 
 result = subprocess.run(
-    ['git', 'describe', '--tags', '--abbrev=0'], stdout=subprocess.PIPE)
-version = result.stdout.decode('utf-8')[:-1]
+    ['cat','./firmwareVersion'], stdout=subprocess.PIPE)
+version = result.stdout.decode('utf-8').strip()
 print("Version " + str(version))
 print("Current CLI targets", COMMAND_LINE_TARGETS)
 print("Current Build targets", BUILD_TARGETS)
 
-# print(env.Dump())
+#print(env.Dump())
 
 
 def post_program_action(source, target, env):
