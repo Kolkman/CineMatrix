@@ -160,7 +160,7 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request)
   }
   String message = htmlHeader;
 
-  message += "<H1>Cine Matrix</H1>";
+  message += "<H1>CineMatrix</H1>";
 
   if (!myConfig->defaultPASS && !wifiConfReq)
   {
