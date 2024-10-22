@@ -1,4 +1,5 @@
 #include "state.h"
+#include "debug.h"
 MatrixState::MatrixState()
 {
     // Empty
@@ -8,34 +9,34 @@ MatrixState::MatrixState()
 
 bool MatrixState::init()
 {
-
+    
     if (!myConfig.prepareFS())
     {
-        Serial.println("Failed to mount LittleFS !");
+        LOGWARN0("Failed to mount LittleFS !");
         return false;
     }
     else
     {
-        Serial.println("Mounted.");
+        LOGINFO0("Mounted.");
     }
 
     if (!myConfig.loadConfig())
     {
-        Serial.println("Failed to load config. Using default values and creating config...");
+        LOGWARN0("Failed to load config. Using default values and creating config...");
         if (!myConfig.saveConfig())
         {
-            Serial.println("Failed to save config");
+            LOGWARN0("Failed to save config");
             return false;
         }
         else
         {
-            Serial.println("Config saved");
+            LOGINFO0("Config saved");
             return true;
         }
     }
     else
     {
-        Serial.println("Config loaded");
+        LOGINFO0("Config loaded");
         return true;
     }
 }

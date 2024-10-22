@@ -2,6 +2,11 @@
 #include <Arduino.h>
 #include "MatrixWebServer.h"
 #include <ESPAsyncWebServer.h>
+#include "debug.h"
+#include "sha1.h"
+
+
+
 
 MatrixWebServer::MatrixWebServer(uint16_t port, const char *username, const char *password) : AsyncWebServer(port)
 {
@@ -40,7 +45,7 @@ void MatrixWebServer::setUsername(const char *u = "")
 
 void MatrixWebServer::authenticate(AsyncWebServerRequest *request)
 {
-    Serial.println("authenticate for:" + request->url());
+    LOGINFO0("authenticate for:" + request->url());
     if (authRequired)
     {
         if (!request->authenticate(this->getUsername(), this->getPassword()))
@@ -48,4 +53,34 @@ void MatrixWebServer::authenticate(AsyncWebServerRequest *request)
             return request->requestAuthentication();
         }
     }
+}
+
+
+// Check if header is present and correct
+bool MatrixWebServer::is_authenticated(AsyncWebServerRequest *request)
+{
+    LOGINFO("Enter is_authenticated");
+    if (request->hasHeader("Cookie"))
+    {
+        String cookie = request->header("Cookie");
+        LOGINFO1("Found cookie: ", cookie);
+
+        String token = sha1(String(username) + ":" +
+                            String(password) + ":" +
+                            request->client()->remoteIP().toString());
+        //  token = sha1(token);
+        String ck = (String)COOKIENAME + "=" + token;
+        if (cookie.indexOf(ck) != -1)
+        {
+            LOGINFO("Authentication Successful");
+            return true;
+        }
+        LOGINFO1("Cookiename:", COOKIENAME);
+        LOGINFO1("Authentication Failed against:", ck);
+    }
+    else
+    {
+        LOGINFO("No cookie in header, Authenticationf failed");
+    }
+    return false;
 }
