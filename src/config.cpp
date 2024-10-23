@@ -6,7 +6,7 @@
 
 MatrixConfig::MatrixConfig() {
   LOGDEBUG0("MatrixConfig constructor")
-  
+  defaultPass=true;
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {
     strcpy(element[i].text, "");
     element[i].effect = PA_SCROLL_LEFT;
@@ -110,11 +110,9 @@ bool MatrixConfig::loadConfig() {
     }
   }
 
- #ifdef REMOVE_THIS
-  if (strcmp(wifiPASS, WIFI_PASS)) // Comparing variable to define
+  if (strcmp(webPass.c_str(), "")) // Comparing variable to define
   {
-
-    defaultPASS = false;
+    LOGINFO0("Web Password not set")
 
     // Only use texts if the default password is not set.
     int cntr = 0;
@@ -131,19 +129,11 @@ bool MatrixConfig::loadConfig() {
       cntr++;
     }
 
-    if (!strncmp(element[0].text,
-                 "Please connect to the following network: ", 41)) {
-      strcpy(element[0].text, "Connect to the network you configured");
-    }
-    if (!strncmp(element[1].text, "The WIFI Password is: ", 21)) {
-      strcpy(element[1].text, "");
-    }
-  } else {
-
-    LOGINFO0("DEFAULT WIFI PASSWORD");
-    defaultPASS = true;
-  }
-  #endif
+   
+      strcpy(element[0].text, "Connect to the server to change your password ");
+  
+    
+  } 
 
   return true;
 }
@@ -151,10 +141,9 @@ bool MatrixConfig::loadConfig() {
 bool MatrixConfig::saveConfig() {
   DynamicJsonDocument jsonDocument(CONFIG_BUF_SIZE);
   JsonObject root = jsonDocument.to<JsonObject>();
-  #ifdef REMOVE_THIS
-  root["wifiSSID"] = wifiSSID;
-  root["wifiPASS"] = wifiPASS;
-#endif
+
+
+  root["webpass"] = webPass;
 
   JsonArray elements = root.createNestedArray("elements");
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {

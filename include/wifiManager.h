@@ -28,7 +28,7 @@
 
 #define MAX_WIFI_CHANNEL 13
 #define ALWAYS_START_WITH_PORTAL true
-#define CONFIGPORTAL_TIMEOUT 60 * 1000
+#define CONFIGPORTAL_TIMEOUT 10 * 1000
 #define WIFI_MULTI_CONNECT_WAITING_MS                                          \
   10 * 1000 // MultiWifi reconnects after 10 seconds.
 #define WIFI_MULTI_1ST_CONNECT_WAITING_MS 3 * 1000

@@ -28,7 +28,7 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
 
   // We set this for later. Wnen there are no credentials set we want to keep
   // the captive portal open - ad infinitum
-  _IPnotSetYet=false;
+  _IPnotSetYet = false;
 
   // Check if we have WIFI confuration
   for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
@@ -159,77 +159,82 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
   struct PositionStruct_t PositionEntry[] = {
       {PA_LEFT, "LEFT"}, {PA_CENTER, "CENTER"}, {PA_RIGHT, "RIGHT"}};
   struct EffectStruct_t EffectEntry[] = {
-    {PA_NO_EFFECT,
-     "No Effect"},       // "Used as a place filler executes no operation"
-    {PA_PRINT, "Print"}, //  "Text just appears (printed)"
-    {PA_SCROLL_UP, "Scroll Up"},     //  "Text scrolls up through the display"
-    {PA_SCROLL_DOWN, "Scroll Down"}, //  "Text scrolls down through the display"
-    {PA_SCROLL_LEFT,
-     "Scroll Left"}, //  "Text scrolls right to left on the display"
-    {PA_SCROLL_RIGHT,
-     "Scroll Right"}, //  "Text scrolls left to right on the display"
+      {PA_NO_EFFECT,
+       "No Effect"},       // "Used as a place filler executes no operation"
+      {PA_PRINT, "Print"}, //  "Text just appears (printed)"
+      {PA_SCROLL_UP, "Scroll Up"}, //  "Text scrolls up through the display"
+      {PA_SCROLL_DOWN,
+       "Scroll Down"}, //  "Text scrolls down through the display"
+      {PA_SCROLL_LEFT,
+       "Scroll Left"}, //  "Text scrolls right to left on the display"
+      {PA_SCROLL_RIGHT,
+       "Scroll Right"}, //  "Text scrolls left to right on the display"
 #if ENA_SPRITE
-    {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
+      {PA_SPRITE,
+       "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-    {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
-                         //  from the right"
-    {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
-                         //  alternate direction (U/D)"
-    {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
-                         //  intensity setting"
-    {PA_DISSOLVE, "Dissolve"},  //  "Text dissolves from one display to another"
-    {PA_BLINDS, "Blinds"},      //  "Text is replaced behind vertical blinds"
-    {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
-#endif                          // ENA_MISC
+      {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
+                           //  from the right"
+      {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
+                           //  alternate direction (U/D)"
+      {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
+                           //  intensity setting"
+      {PA_DISSOLVE,
+       "Dissolve"},          //  "Text dissolves from one display to another"
+      {PA_BLINDS, "Blinds"}, //  "Text is replaced behind vertical blinds"
+      {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
+#endif                            // ENA_MISC
 #if ENA_WIPE
-    {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
-                       // like it is wiped on and off"
-    {PA_WIPE_CURSOR,
-     "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
-#endif               // ENA_WIPES
+      {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
+                         // like it is wiped on and off"
+      {PA_WIPE_CURSOR,
+       "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
+#endif                 // ENA_WIPES
 #if ENA_SCAN
-    {PA_SCAN_HORIZ,
-     "Scan Horizontal led"}, //  "Scan the LED column one at a time then
-                             //  appears/disappear at end"
-    {PA_SCAN_HORIZX,
-     "Scan Horizontal blank"}, //  "Scan a blank column through the text one
-                               //  column at a time then appears/disappear at
-                               //  end"
-    {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
-                                         //  then appears/disappear at end"
-    {PA_SCAN_VERTX,
-     "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
-                             //  a time then appears/disappear at end"
-#endif                       // ENA_SCAN
+      {PA_SCAN_HORIZ,
+       "Scan Horizontal led"}, //  "Scan the LED column one at a time then
+                               //  appears/disappear at end"
+      {PA_SCAN_HORIZX,
+       "Scan Horizontal blank"}, //  "Scan a blank column through the text one
+                                 //  column at a time then appears/disappear at
+                                 //  end"
+      {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
+                                           //  then appears/disappear at end"
+      {PA_SCAN_VERTX,
+       "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
+                               //  a time then appears/disappear at end"
+#endif                         // ENA_SCAN
 #if ENA_OPNCLS
-    {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
-                             // display},  towards the ends"
-    {PA_OPENING_CURSOR,
-     "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
-    {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
-                             // display}, towards the middle"
-    {PA_CLOSING_CURSOR,
-     "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
-#endif                  // ENA_OPNCLS
+      {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
+                               // display},  towards the ends"
+      {PA_OPENING_CURSOR,
+       "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
+      {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
+                               // display}, towards the middle"
+      {PA_CLOSING_CURSOR,
+       "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
+#endif                    // ENA_OPNCLS
 #if ENA_SCR_DIA
-    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},  //  "Text moves in/out in a diagonal
-                                            //  path up and left (North East)"
-    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
-                                            //  path up and right (North West)"
-    {PA_SCROLL_DOWN_LEFT,
-     "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
-                         //  left (South East)"
-    {PA_SCROLL_DOWN_RIGHT,
-     "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
-                           //  right (North West)"
-#endif                     // ENA_SCR_DIA
+      {PA_SCROLL_UP_LEFT,
+       "Scroll Up&Left"}, //  "Text moves in/out in a diagonal
+                          //  path up and left (North East)"
+      {PA_SCROLL_UP_RIGHT,
+       "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
+                          //  path up and right (North West)"
+      {PA_SCROLL_DOWN_LEFT,
+       "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
+                           //  left (South East)"
+      {PA_SCROLL_DOWN_RIGHT,
+       "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
+                             //  right (North West)"
+#endif                       // ENA_SCR_DIA
 #if ENA_GROW
-    {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
-                                //  from the top down"
-    {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
-                                // shrinks from the bottom up"}
-#endif                          // ENA_
+      {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
+                                  //  from the top down"
+      {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
+                                  // shrinks from the bottom up"}
+#endif                            // ENA_
   };
 
   bool wifiConfReq = false;
@@ -240,10 +245,8 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
   String message = htmlHeader;
 
   message += "<H1>CineMatrix</H1>";
-#ifdef REMOVE_THIS
-  if (!myConfig->defaultPASS && !wifiConfReq)
-#endif
-  {
+
+  if (!myConfig->defaultPass && !wifiConfReq) {
 
     message += "<div class=\"matrixform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
@@ -314,48 +317,38 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
                "onclick=\"advancedButton()\">Advanced "
                "Configuration</button><script>function advancedButton() {  "
                "location.replace(\"/index.html?wificonfig\")}</script></div>";
-#ifdef REMOVE_THIS
+
   } else
 
   {
 
-    if (myConfig->defaultPASS)
-      message += "<div class=\"warning\"> You must change the WIFI "
+    if (myConfig->defaultPass)
+      message += "<div class=\"warning\"> You must change the WEB "
                  "password!</div> <!-- div class=warning--> ";
 
-    message += "<div class=\"wifiorm\"> \n";
+    message += "<div class=\"webpassform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
-    message += "<div class=\"wifientry\">";
-    message += "<div class=\"wifiinput\">";
-    message += "<div class=\"wifilabel\"> <label for=\"ssid\">Wifi network "
-               "name (SSID):</label></div> <!-- div class=wifilabel -->\n";
-    message += "<div class=\"wififield\"> <input id=\"ssid\" name=\"ssid\" "
-               "maxlength=32  value=\"" +
-               String(myConfig->wifiSSID) +
-               "\" ></div> <!-- div class=wififield -->\n";
-    message += "</div> <!-- div  class=wifiinput -->\n";
-    message += "<div class=\"wifiinput\">";
-    message += "<div class=\"wifilabel\"> <label for=\"pass\">Wifi network "
-               "password:</label></div> <!-- div class=wifilabel -->\n";
-    message += "<div class=\"wififield\"><input id=\"pas\" name=\"pass\" "
-               "maxlength=32  value=\"" +
-               String(myConfig->wifiPASS) +
-               "\" ></div><!-- div class=wififield -->\n";
-    message += "</div> <!-- div  class=wifiinput -->\n";
-    message += "</div><!--div class=wifientry -->\n";
+    message += "<div class=\"webpassentry\">";
+    message += "<div class=\"webpassinput\">";
+    message += "<div class=\"webpasslabel\"> <label for=\"webpass\">password"
+               ":</label></div> <!-- div class=webpasslabel -->\n";
+    message += "<div class=\"webpassfield\"> <input id=\"webpass1\" name=\"webpass\" maxlength=32  required onchange=\"CompareFields('webpass1','webpass2',true)\" ></div> <!-- div class=webpassfield -->\n";
+    message += "</div> <!-- div  class=webpassinput -->\n";
+    message += "<div class=\"webpassinput\">";
+    message += "<div class=\"webpasslabel\"> <label for=\"pass\"> repeat "
+               "password:</label></div> <!-- div class=webpasslabel -->\n";
+    message += "<div class=\"webpassfield\"><input id=\"webpass2\" name=\"pass\" maxlength=32 required onchange=\"CompareFields('webpass1','webpass2',true)\"></div><!-- div class=webpassfield -->\n";
+    message += "</div> <!-- div  class=webpassinput -->\n";
+    message += "</div><!--div class=webpassentry -->\n";
     message += " <div class=\"submitbutton\"> <input type=\"submit\" "
                "value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
 
-#endif
-
-#ifdef REMOVE_THIS
-    if (!myConfig->defaultPASS)
+    if (!myConfig->defaultPass)
       message +=
           "<div id=\"advancedbutton\"> <button "
           "onclick=\"updateButton()\">Update</button><script>function "
           "updateButton() {  location.replace(\"/update\")}</script></div>";
-#endif
 
     message +=
         "<div id=\"advancedbutton\"> <button "
@@ -647,7 +640,7 @@ void WebInterface::handleNetworkSetup(
     AsyncWebServerRequest *request) { // only used as config portal
   LOGINFO0("Blocking for finalizing input");
   _waitingForClientAction = true;
-  
+
   AsyncWebServerResponse *response = request->beginResponse(
       200, "text/html;charset=UTF-8", networkSetup_html, networkSetup_html_len);
   response->addHeader("Content-Encoding", "gzip");
