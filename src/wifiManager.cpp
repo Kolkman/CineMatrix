@@ -13,6 +13,8 @@
 #include "debug.h"
 #include "webinterface.h"
 
+extern MD_Parola Display;
+
 WiFiManager::WiFiManager(WebInterface *_i) {
   myInterface = _i;
   dnsServer = new AsyncDNSServer;
@@ -21,15 +23,12 @@ WiFiManager::WiFiManager(WebInterface *_i) {
 void WiFiManager::setupWiFiAp(WiFi_AP_IPConfig *WifiApIP) {
   unsigned long startedAt = millis();
 
-
- 
   // Initiation of all.
   ApSSID = "CINEMatrix";
   ApPass = AP_PASSWORD + String(ESP_getChipId(), HEX); // TODO make configurable
-  LOGDEBUG1("ApPass: ",ApPass);
- 
-  String iHostname = "ESP32Mach" + String(ESP_getChipId(), HEX);
+  LOGDEBUG1("ApPass: ", ApPass);
 
+  String iHostname = "ESP32Mach" + String(ESP_getChipId(), HEX);
 
   getRFC952_hostname(iHostname.c_str()); // Sets RFC952_hostname attribute
   LOGERROR1(F("Hostname set to"), RFC952_hostname)
@@ -111,11 +110,17 @@ void WiFiManager::loopPortal() {
   }
 
   LOGINFO0("startConfigPortal : Enter loop");
-  if   (myInterface->_waitingForClientAction ){
+  if (myInterface->_waitingForClientAction) {
     LOGDEBUG0("Waiting until Client Actions");
   }
+
+  String toDisplay="WIFI: " + ApSSID + " / " + ApPass;
+
   while (myInterface->_waitingForClientAction ||
          millis() < _configPortalStart + CONFIGPORTAL_TIMEOUT) {
+
+    if (Display.displayAnimate())
+      Display.displayText( toDisplay.c_str(), PA_CENTER, 100, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
 
     yield();
   }
@@ -144,7 +149,7 @@ uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
 #endif
 
 #endif
-  LOGERROR(F("ConnectMultiWiFi with :"));
+  LOGINFO0(F("ConnectMultiWiFi with :"));
   bool MultiWifiEntrySet = false;
   for (uint8_t i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
     // Don't permit NULL SSID and password len < MIN_AP_PASSWORD_SIZE (8)
@@ -161,12 +166,12 @@ uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
     }
   }
   if (!MultiWifiEntrySet) {
-    LOGINFO("Could not set any MultiWiFi networks... Restarting");
+    LOGERROR0("Could not set any MultiWiFi networks... Restarting");
     ESP.restart();
   }
 
-  LOGERROR(F("Connecting MultiWifi..."));
- // TODO  myInterface->report(" Connecting to", "      WIFI");
+
+  // TODO  myInterface->report(" Connecting to", "      WIFI");
   /*
       #if !USE_DHCP_IP
           // New in v1.4.0
@@ -195,7 +200,7 @@ uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
     LOGERROR3(F("SSID:"), WiFi.SSID(), F(",RSSI="), WiFi.RSSI());
     LOGERROR3(F("Channel:"), WiFi.channel(), F(",IP address:"), WiFi.localIP());
   } else {
-    LOGERROR(F("WiFi not connected"));
+    LOGERROR0(F("WiFi not connected"));
 
     ESP.restart();
   }

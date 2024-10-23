@@ -53,14 +53,32 @@ void webInterfaceAPI::handleSet(AsyncWebServerRequest *request) {
   bool safeandrestart = false;
   bool reconf = false;
   bool firstarg = true;
-  LOGINFO1("API SET with", request->url());
+  LOGDEBUG1("API SET with", request->url());
   char message[2048]; // This is sufficiently big to store all key:val
                       // combinations
   if (!server->is_authenticated(request) && mustAuthenticate) {
-    LOGINFO("API not authenticed")
+    LOGINFO0("API not authenticed")
     strcpy(message, "{\"authenticated\": false}");
     request->send(200, "application/json", message);
     return;
+  }
+
+  int params = request->params();
+  for (int i = 0; i < params; i++) {
+    const AsyncWebParameter *p = request->getParam(i);
+    if (p->isFile()) { // p->isPost() is also true
+      String msg =
+          "FILE[" + p->name() + "]: " + p->value() + "(" + p->size() + ")";
+      LOGDEBUG0(msg);
+    } else if (p->isPost()) {
+      String msg = "POST[" + p->name() + "]: " + p->value();
+      LOGDEBUG0(msg);
+
+    } else {
+
+      String msg = "GET[" + p->name() + "]: " + p->value();
+      LOGDEBUG0(msg);
+    }
   }
 
   strcpy(message, "{");
@@ -69,37 +87,37 @@ void webInterfaceAPI::handleSet(AsyncWebServerRequest *request) {
     myConfig->WM_config.WiFi_Creds[z].config_change = false; // initiate
   }
   for (uint8_t i = 0; i < request->args(); i++) {
-    if (request->argName(i).startsWith("wifi_ssid")) {
-      LOGINFO("wifi_ssid Found");
+    const AsyncWebParameter *p = request->getParam(i);
+    if (p->name().startsWith("wifi_ssid")) {
+      LOGDEBUG0("wifi_ssid Found");
       for (int z = 0; z < NUM_WIFI_CREDENTIALS; z++) {
 
-        if (request->argName(i).equals("wifi_ssid" + String(z)) &&
-            request->arg(i) != "") {
+        if (p->name().equals("wifi_ssid" + String(z)) && p->value() != "") {
           myConfig->WM_config.WiFi_Creds[z].config_change =
               true; // administer change has happened.
-          LOGINFO("--- wifi_ssid" + String(z));
-          addjson(message, firstarg, "wifi_ssid" + String(z), request->arg(i));
+          LOGDEBUG0("--- wifi_ssid" + String(z) + ":" + p->value());
+          addjson(message, firstarg, "wifi_ssid" + String(z), p->value());
           strlcpy(myConfig->WM_config.WiFi_Creds[z].wifi_ssid,
-                  request->arg(i).c_str(), SSID_MAX_LEN);
+                  p->value().c_str(), SSID_MAX_LEN);
           reconf = true;
         }
       }
-    } else if (request->argName(i).startsWith("wifi_pw")) {
-      LOGINFO("wifi_pw Found");
+    } else if (p->name().startsWith("wifi_pw")) {
+      LOGDEBUG0("wifi_pw Found");
       for (int z = 0; z < NUM_WIFI_CREDENTIALS; z++) {
 
-        if (request->argName(i).equals("wifi_pw" + String(z)) &&
-            request->arg(i) != "") {
+        if (p->name().equals("wifi_pw" + String(z)) &&
+            p->value() != "") {
           myConfig->WM_config.WiFi_Creds[z].config_change =
               false; // administer pw has changed
-          LOGINFO("--- wifi_pw" + String(z));
-          addjson(message, firstarg, "wifi_pw" + String(z), request->arg(i));
+          LOGDEBUG0("--- wifi_pw" + String(z));
+          addjson(message, firstarg, "wifi_pw" + String(z), p->value());
           strlcpy(myConfig->WM_config.WiFi_Creds[z].wifi_pw,
-                  request->arg(i).c_str(), PASS_MAX_LEN);
+                  p->value().c_str(), PASS_MAX_LEN);
           reconf = true;
         }
       }
-    } else if (request->argName(i) == "safeandrestart" || request->arg(i)) {
+    } else if (p->name() == "safeandrestart" || p->value()) {
       safeandrestart = true;
     }
   }

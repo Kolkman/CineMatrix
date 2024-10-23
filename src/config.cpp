@@ -38,7 +38,6 @@ MatrixConfig::MatrixConfig() {
   LOGINFO(element[0].text);
 }
 
-
 bool MatrixConfig::prepareFS() {
   LOGDEBUG0("MatrixConfig::PrepareFS")
   if (!LittleFS.begin(false /* false: Do not format if mount failed */)) {
@@ -67,12 +66,52 @@ bool MatrixConfig::loadConfig() {
 
   DeserializationError parsingError =
       deserializeJson(jsonDocument, loggingStream);
-  Serial.println("");
+
+  if (_MatrixRSS_LOGLEVEL_ > 2) { // at DEBUG level
+    serializeJsonPretty(jsonDocument, Serial);
+  }
+
   if (parsingError) {
 
-    Serial.println("Failed to deserialize json config file");
-    Serial.println(parsingError.c_str());
+    LOGERROR0("Failed to deserialize json config file");
+    LOGERROR0(parsingError.c_str());
     return false;
+  }
+
+  for (int i = 0; i < 4; i++) {
+    // itterate over the IP4 tupples
+    if (jsonDocument["ap_static_ip"][i])  WM_AP_IPconfig._ap_static_ip[i] = jsonDocument["ap_static_ip"][i];
+    if (jsonDocument["ap_static_gw"][i]) WM_AP_IPconfig._ap_static_gw[i] = jsonDocument["ap_static_gw"][i];
+    if (jsonDocument["ap_static_gw"][i]) WM_AP_IPconfig._ap_static_sn[i] = jsonDocument["ap_static_gw"][i];
+    if (jsonDocument["sta_static_ip"][i]) WM_STA_IPconfig._sta_static_ip[i] = jsonDocument["sta_static_ip"][i];
+    if (jsonDocument["sta_static_gw"][i]) WM_STA_IPconfig._sta_static_gw[i] = jsonDocument["sta_static_gw"][i];
+    if (jsonDocument["sta_static_sn"][i]) WM_STA_IPconfig._sta_static_sn[i] = jsonDocument["sta_static_sn"][i];
+#if USE_CONFIGURABLE_DNS
+    WM_STA_IPconfig._sta_static_dns1[i] = jsonDocument["sta_static_dns1"][i];
+    WM_STA_IPconfig._sta_static_dns2[i] = jsonDocument["sta_static_dns2"][i];
+#endif
+  }
+  if (jsonDocument["WifiCredential_ssid"]) {
+    int i = 0;
+    JsonArray j_ssid = jsonDocument["WifiCredential_ssid"];
+    // using C++11 syntax (preferred):
+    for (JsonVariant value : j_ssid) {
+      strcpy(WM_config.WiFi_Creds[i].wifi_ssid, value.as<const char *>());
+      i++;
+      if (i == NUM_WIFI_CREDENTIALS)
+        break;
+    }
+  }
+  if (jsonDocument["WifiCredential_pw"]) {
+    int i = 0;
+    JsonArray j_ssid = jsonDocument["WifiCredential_pw"];
+    // using C++11 syntax (preferred):
+    for (JsonVariant value : j_ssid) {
+      strcpy(WM_config.WiFi_Creds[i].wifi_pw, value.as<const char *>());
+      i++;
+      if (i == NUM_WIFI_CREDENTIALS)
+        break;
+    }
   }
 
   {
@@ -136,6 +175,25 @@ bool MatrixConfig::saveConfig() {
     elmnt["position"] = element[i].position;
     elmnt["speed"] = element[i].speed;
     elmnt["repeat"] = element[i].repeat;
+  }
+
+  JsonArray ssid = jsonDocument.createNestedArray("WifiCredential_ssid");
+  JsonArray pw = jsonDocument.createNestedArray("WifiCredential_pw");
+
+  for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
+    // Weed out duplicate credentials
+    bool SSIDhasDuplicate = false;
+    for (int j = 0; j < i; j++) {
+      if (strcmp(WM_config.WiFi_Creds[i].wifi_ssid,
+                 WM_config.WiFi_Creds[j].wifi_ssid) == 0) {
+
+        WM_config.WiFi_Creds[i].wifi_pw[0] = '\0';
+        WM_config.WiFi_Creds[i].wifi_ssid[0] = '\0';
+      }
+    }
+
+    ssid.add(WM_config.WiFi_Creds[i].wifi_ssid);
+    pw.add(WM_config.WiFi_Creds[i].wifi_pw);
   }
 
   File configFile = LittleFS.open("/config.json", "w", true);

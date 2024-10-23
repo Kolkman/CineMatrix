@@ -9,6 +9,8 @@
 #include "pages/captivePortal.html.h"
 #include "pages/networkConfigPage.js.h"
 #include "pages/networkSetup.html.h"
+#include "pages/networkConfigPage.js.h"
+#include "pages/redCircleCrossed.svg.h"
 
 #include "pages/CineMatrix.css.h"
 #include <ElegantOTA.h>
@@ -104,11 +106,12 @@ void WebInterface::InitPages() {
       std::bind(&WebInterface::handleLogout, this, std::placeholders::_1));
 
   DEF_HANDLE_WebLogin_html;
+  DEF_HANDLE_CineMatrix_css
+  DEF_HANDLE_redCircleCrossed_svg;
   /*
-      DEF_HANDLE_ESPresso_css;
+
       DEF_HANDLE_EspressoMachine_svg;
       DEF_HANDLE_redCircleCrossed_svg;
-      DEF_HANDLE_ESPresso_css;
       DEF_HANDLE_switch_css;
       DEF_HANDLE_firmware_js;
       */
@@ -460,6 +463,7 @@ void WebInterface::handleFile(AsyncWebServerRequest *request,
 }
 
 void WebInterface::setConfigPortalPages() {
+  LOGDEBUG0("SetConfigPortalPages");
   InitPages();
   server->on("/scan", HTTP_GET,
              std::bind(&WebInterface::handleScan, this, std::placeholders::_1));
@@ -484,18 +488,17 @@ void WebInterface::setConfigPortalPages() {
   DEF_HANDLE_networkConfigPage_js;
   DEF_HANDLE_captivePortal_html;
   webAPI.begin(server, myConfig);
-  webAPI.requireAuthorization(
-      false); // The API is wide open during the configportal phase
+  webAPI.requireAuthorization(false); // The API is wide open during the configportal phase
 
   return;
 }
 
 void WebInterface::handleScan(AsyncWebServerRequest *request) {
-  LOGINFO("Scan Handle");
+  LOGDEBUG0("Scan Handle");
   String json = "[";
   int n = WiFi.scanComplete();
   if (n == -2) {
-    LOGERROR("Scanning no result, initiating no scan");
+    LOGERROR0("Scanning no result, initiating no scan");
     WiFi.scanNetworks(true);
   } else if (n) {
     for (int i = 0; i < n; ++i) {

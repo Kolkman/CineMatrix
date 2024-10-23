@@ -282,22 +282,7 @@ function updatePage() {
         })
         .then(function (data) {
             nets = data.maxNets;
-            if (!data.mqtt) {
-                // define ENABLE_MQTT is false in the main code.
-                const mqtt = document.getElementById("MQTTSettings");
-                while (mqtt.hasChildNodes()) {
-                    mqtt.removeChild(mqtt.firstChild);
-                }
-            } else {
-                mqttHost = document.getElementById("mqttHost");
-                mqttHost.setAttribute("value", data.mqttHost);
-                mqttPort = document.getElementById("mqttPort");
-                mqttPort.setAttribute("value", data.mqttPort);
-                mqttUser = document.getElementById("mqttUser");
-                mqttUser.setAttribute("value", data.mqttUser);
-                mqttPass = document.getElementById("mqttPass");
-                mqttPass.setAttribute("value", data.mqttPass);
-            }
+      
             // Creates a the form in which we put the wifi networs.
             selecteNetworks = document.getElementById("selectedNetworks");
 

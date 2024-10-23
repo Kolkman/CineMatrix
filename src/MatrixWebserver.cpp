@@ -59,7 +59,7 @@ void MatrixWebServer::authenticate(AsyncWebServerRequest *request)
 // Check if header is present and correct
 bool MatrixWebServer::is_authenticated(AsyncWebServerRequest *request)
 {
-    LOGINFO("Enter is_authenticated");
+    LOGDEBUG0("Enter is_authenticated");
     if (request->hasHeader("Cookie"))
     {
         String cookie = request->header("Cookie");
@@ -72,7 +72,7 @@ bool MatrixWebServer::is_authenticated(AsyncWebServerRequest *request)
         String ck = (String)COOKIENAME + "=" + token;
         if (cookie.indexOf(ck) != -1)
         {
-            LOGINFO("Authentication Successful");
+            LOGINFO("    Authentication Successful");
             return true;
         }
         LOGINFO1("Cookiename:", COOKIENAME);
@@ -80,7 +80,7 @@ bool MatrixWebServer::is_authenticated(AsyncWebServerRequest *request)
     }
     else
     {
-        LOGINFO("No cookie in header, Authenticationf failed");
+        LOGINFO0("    No cookie in header.");
     }
     return false;
 }

@@ -5,10 +5,10 @@
 #define MAX_DEVICES 12 // Number of 8x8 Matrices
 
 
-#define DATA_PIN 25
-#define CS_PIN 26
-#define CLK_PIN 27
 
+#define DATA_PIN 12
+#define CS_PIN 14
+#define CLK_PIN 27
 
 #define DEFAULT_SPEED 40
 

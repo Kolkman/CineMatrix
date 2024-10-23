@@ -9,6 +9,7 @@ all:include/pages/CineMatrix.css.h \
 	include/pages/networkSetup.html.h \
 	include/pages/networkConfigPage.js.h \
 	include/pages/configDone.html.h \
+	include/pages/redCircleCrossed.svg.h\
 	include/pages/WebLogin.html.h 
 	@exec true 
 
@@ -41,8 +42,8 @@ include/pages/networkConfigPage.js.h: WEBSources/networkConfigPage-min.js
 include/pages/configDone.html.h: WEBsources/configDone.html
 	@./ProduceDefine.py $< text/html\;charset=UTF-8 > $@
 
-include/pages/CineMatrix.css.h: WEBsources/CineMatrix-min.css
-	@./ProduceDefine.py $< text/css serverscope  > $@
+include/pages/redCircleCrossed.svg.h: WEBSources/redCircleCrossed.svg
+	@./ProduceDefine.py $< image/svg+xml serverscope > $@
 
 
 clean:

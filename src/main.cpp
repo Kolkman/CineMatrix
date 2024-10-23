@@ -63,6 +63,7 @@ void setup() {
   Display.setIntensity(0);
   Display.displayClear();
   Display.setSpriteData(movie, W_MOVIE, F_MOVIE, empty, W_EMPTY, F_EMPTY);
+  Display.print(FIRMWAREVERSION);
 
   if (!myState.init()) {
     Display.displayScroll("Init Error: filesystem problems", PA_RIGHT,
