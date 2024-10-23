@@ -149,7 +149,7 @@ uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
 #endif
 
 #endif
-  LOGINFO0(F("ConnectMultiWiFi with :"));
+  LOGINFO0(F("ConnectMultiWiFi with"));
   bool MultiWifiEntrySet = false;
   for (uint8_t i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
     // Don't permit NULL SSID and password len < MIN_AP_PASSWORD_SIZE (8)

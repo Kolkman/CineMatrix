@@ -9,7 +9,6 @@
 #include "pages/captivePortal.html.h"
 #include "pages/networkConfigPage.js.h"
 #include "pages/networkSetup.html.h"
-#include "pages/networkConfigPage.js.h"
 #include "pages/redCircleCrossed.svg.h"
 
 #include "pages/CineMatrix.css.h"
@@ -27,20 +26,23 @@ WebInterface::WebInterface(MatrixConfig *config, const char *username,
 WebInterface::~WebInterface() { LOGDEBUG0("Webinterfce Destructor"); }
 
 void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
-  LOGINFO0("Setting up  Webserver");
+  LOGINFO0("Setting up Webserver");
 
   // We set this for later. Wnen there are no credentials set we want to keep
   // the captive portal open - ad infinitum
   _waitingForClientAction = true;
+
+  // Check if we have WIFI confuration
   for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
     if (strlen(myConfig->WM_config.WiFi_Creds[i].wifi_ssid) > 0) {
       _waitingForClientAction = false;
     }
   }
-  if (_waitingForClientAction)
-    LOGINFO0("NO WiFi NEtworks set, we'll later keep the captive portal open");
+
+
   // Config cycle only happens if the button is pressed
   if (_waitingForClientAction) {
+    LOGINFO0("NO WiFi NEtworks set, we'll later keep the captive portal open");
     wifiMngr->setupWiFiAp(&(myConfig->WM_AP_IPconfig));
     server->reset();
     setConfigPortalPages();
@@ -50,10 +52,13 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
         ->loopPortal(); /// Wait the configuration to be finished or timed out.
   }
 
+  
   wifiMngr->connectMultiWiFi(myConfig);
+  LOGDEBUG0("Resetting the Webserver");
   server->reset();
 
-  setupWebSrv(wifiMngr);
+//  setupWebSrv(wifiMngr);
+ LOGDEBUG0("Starting the Webserver");
   server->begin(); /// Webserver is now running....
 
   if (server == nullptr) {
@@ -106,8 +111,7 @@ void WebInterface::InitPages() {
       std::bind(&WebInterface::handleLogout, this, std::placeholders::_1));
 
   DEF_HANDLE_WebLogin_html;
-  DEF_HANDLE_CineMatrix_css
-  DEF_HANDLE_redCircleCrossed_svg;
+  DEF_HANDLE_CineMatrix_css DEF_HANDLE_redCircleCrossed_svg;
   /*
 
       DEF_HANDLE_EspressoMachine_svg;
@@ -214,8 +218,8 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
      "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
 #endif                  // ENA_OPNCLS
 #if ENA_SCR_DIA
-    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"}, //  "Text moves in/out in a diagonal
-                                           //  path up and left (North East)"
+    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},  //  "Text moves in/out in a diagonal
+                                            //  path up and left (North East)"
     {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
                                             //  path up and right (North West)"
     {PA_SCROLL_DOWN_LEFT,
@@ -488,7 +492,8 @@ void WebInterface::setConfigPortalPages() {
   DEF_HANDLE_networkConfigPage_js;
   DEF_HANDLE_captivePortal_html;
   webAPI.begin(server, myConfig);
-  webAPI.requireAuthorization(false); // The API is wide open during the configportal phase
+  webAPI.requireAuthorization(
+      false); // The API is wide open during the configportal phase
 
   return;
 }
