@@ -14,13 +14,11 @@
 #include "pages/CineMatrix.css.h"
 #include <ElegantOTA.h>
 
-WebInterface::WebInterface(MatrixConfig *config, const char *username,
-                           const char *password) {
+WebInterface::WebInterface(MatrixConfig *config, const char *password) {
   LOGDEBUG0("Webinterfce Constructor");
-  _username = username;
   _password = password;
   myConfig = config;
-  server = new MatrixWebServer(80, username, password);
+  server = new MatrixWebServer(80, password);
 }
 
 WebInterface::~WebInterface() { LOGDEBUG0("Webinterfce Destructor"); }
@@ -30,18 +28,16 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
 
   // We set this for later. Wnen there are no credentials set we want to keep
   // the captive portal open - ad infinitum
-  _waitingForClientAction = true;
+  _IPnotSetYet=false;
 
   // Check if we have WIFI confuration
   for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
     if (strlen(myConfig->WM_config.WiFi_Creds[i].wifi_ssid) > 0) {
-      _waitingForClientAction = false;
+      _IPnotSetYet = false;
     }
   }
 
-
-  // Config cycle only happens if the button is pressed
-  if (_waitingForClientAction) {
+  if (_IPnotSetYet || ALWAYS_START_WITH_PORTAL) {
     LOGINFO0("NO WiFi NEtworks set, we'll later keep the captive portal open");
     wifiMngr->setupWiFiAp(&(myConfig->WM_AP_IPconfig));
     server->reset();
@@ -52,13 +48,12 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
         ->loopPortal(); /// Wait the configuration to be finished or timed out.
   }
 
-  
   wifiMngr->connectMultiWiFi(myConfig);
   LOGDEBUG0("Resetting the Webserver");
   server->reset();
 
-//  setupWebSrv(wifiMngr);
- LOGDEBUG0("Starting the Webserver");
+  //  setupWebSrv(wifiMngr);
+  LOGDEBUG0("Starting the Webserver");
   server->begin(); /// Webserver is now running....
 
   if (server == nullptr) {
@@ -245,8 +240,11 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
   String message = htmlHeader;
 
   message += "<H1>CineMatrix</H1>";
+#ifdef REMOVE_THIS
+  if (!myConfig->defaultPASS && !wifiConfReq)
+#endif
+  {
 
-  if (!myConfig->defaultPASS && !wifiConfReq) {
     message += "<div class=\"matrixform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
 
@@ -316,11 +314,15 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
                "onclick=\"advancedButton()\">Advanced "
                "Configuration</button><script>function advancedButton() {  "
                "location.replace(\"/index.html?wificonfig\")}</script></div>";
-  } else {
+#ifdef REMOVE_THIS
+  } else
+
+  {
 
     if (myConfig->defaultPASS)
       message += "<div class=\"warning\"> You must change the WIFI "
                  "password!</div> <!-- div class=warning--> ";
+
     message += "<div class=\"wifiorm\"> \n";
     message += "<form action=\"/submit.html\"> \n";
     message += "<div class=\"wifientry\">";
@@ -344,11 +346,16 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
     message += " <div class=\"submitbutton\"> <input type=\"submit\" "
                "value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
+
+#endif
+
+#ifdef REMOVE_THIS
     if (!myConfig->defaultPASS)
       message +=
           "<div id=\"advancedbutton\"> <button "
           "onclick=\"updateButton()\">Update</button><script>function "
           "updateButton() {  location.replace(\"/update\")}</script></div>";
+#endif
 
     message +=
         "<div id=\"advancedbutton\"> <button "
@@ -371,6 +378,7 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
   bool wifiChange = false;
 
   for (uint8_t i = 0; i < request->args(); i++) {
+#ifdef REMOVE_THIS
     if (request->argName(i) == "pass") {
 
       if (!request->arg(i).equals(myConfig->wifiPASS)) {
@@ -380,6 +388,7 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
         Serial.println(myConfig->wifiPASS);
         reconf = true;
       }
+
     } else if (request->argName(i) == "ssid") {
 
       if (!request->arg(i).equals(myConfig->wifiSSID)) {
@@ -389,7 +398,9 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
         Serial.println(myConfig->wifiSSID);
         reconf = true;
       }
-    } else {
+    } else
+#endif
+    {
 
       for (int j = 0; j < MAXTEXTELEMENTS; j++) {
         if (request->argName(i) == "textentry" + String(j)) {
@@ -432,6 +443,7 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
   if (wifiChange) {
     message += "<div class=\"reconfig\"> <p>WifiSettings only change after you "
                "have reset the device.</p>\n";
+#ifdef REMOVE_THIS
     message +=
         "<p>Make sure you make note of your SSID and Password. If you forget "
         "the password you will have to reprogram your device</p>\n";
@@ -442,7 +454,7 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
     message += "<tr><td>WiFi Password</td><td>" + String(myConfig->wifiPASS) +
                "</td></tr>\n";
     message += "</table> </div>\n";
-
+#endif
     message +=
         " <button onclick=\"resetButton()\">Reset</button><script>function "
         "resetButton() {  location.replace(\"/reset\")}</script></div>";
@@ -547,10 +559,9 @@ void WebInterface::handleLogin(AsyncWebServerRequest *request) {
     String cookie = request->header("Cookie");
     LOGINFO1("Found cookie: ", cookie);
   }
-  if (request->hasArg("username") && request->hasArg("password")) {
+  if (request->hasArg("password")) {
     LOGINFO("Found parameter: ");
-    if (request->arg("username") == String(_username) &&
-        request->arg("password") == String(_password)) {
+    if (request->arg("password") == String(_password)) {
       AsyncWebServerResponse *response =
           request->beginResponse(301); // Sends 301 redirect
 
@@ -560,7 +571,7 @@ void WebInterface::handleLogin(AsyncWebServerRequest *request) {
       }
       response->addHeader("Location", RedirectURL);
       response->addHeader("Cache-Control", "no-cache");
-      String token = sha1(String(_username) + ":" + String(_password) + ":" +
+      String token = sha1(String(_password) + ":" +
                           request->client()->remoteIP().toString());
       LOGINFO1("Token: ", token);
       response->addHeader("Set-Cookie",
@@ -570,7 +581,7 @@ void WebInterface::handleLogin(AsyncWebServerRequest *request) {
       LOGINFO("Log in Successful");
       return;
     }
-    msg = "Wrong username/password! try again.";
+    msg = "Wrong password! try again.";
     Serial.println("Log in Failed");
     AsyncWebServerResponse *response =
         request->beginResponse(301); // Sends 301 redirect
@@ -634,9 +645,9 @@ void WebInterface::handleConfigConfig(AsyncWebServerRequest *request) {
 
 void WebInterface::handleNetworkSetup(
     AsyncWebServerRequest *request) { // only used as config portal
-  LOGINFO("Blocking for finalizing input");
+  LOGINFO0("Blocking for finalizing input");
   _waitingForClientAction = true;
-
+  
   AsyncWebServerResponse *response = request->beginResponse(
       200, "text/html;charset=UTF-8", networkSetup_html, networkSetup_html_len);
   response->addHeader("Content-Encoding", "gzip");
@@ -646,7 +657,7 @@ void WebInterface::handleNetworkSetup(
 }
 
 void WebInterface::handleCaptivePortal(AsyncWebServerRequest *request) {
-  LOGINFO("CaptivePortal Hit")
+  LOGINFO0("CaptivePortal Hit")
 
   if (captivePortal(request)) {
     // If captive portal redirect instead of displaying the error page.

@@ -58,7 +58,7 @@ void WiFiManager::setupWiFiAp(WiFi_AP_IPConfig *WifiApIP) {
   // Check if there is stored WiFi router/password credentials.
   // If not found, device will remain in configuration mode until switched off
   // via webserver.
-  LOGERROR(F("Starting Setup of AP"));
+  LOGINFO0(F("Starting Setup of AP"));
   _configPortalStart = millis();
 
   if (WiFi.getAutoConnect() == 0)
@@ -115,7 +115,7 @@ void WiFiManager::loopPortal() {
   }
 
   String toDisplay="WIFI: " + ApSSID + " / " + ApPass;
-
+  _configPortalStart=millis();
   while (myInterface->_waitingForClientAction ||
          millis() < _configPortalStart + CONFIGPORTAL_TIMEOUT) {
 
@@ -133,8 +133,10 @@ void WiFiManager::loopPortal() {
 uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
 
   uint8_t status;
-#ifdef HOSTNAME
-  getRFC952_hostname(HOSTNAME);
+#ifdef RFC952_HOSTNAME
+getRFC952_hostname(RFC952_HOSTNAME);
+LOGDEBUG1("Hostname set to ", RFC952_hostname);
+  
 
 #if (defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2))
   WiFi.setHostname(RFC952_hostname);
@@ -147,8 +149,8 @@ uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
     WiFi.setHostname(RFC952_hostname);
   }
 #endif
-
 #endif
+
   LOGINFO0(F("ConnectMultiWiFi with"));
   bool MultiWifiEntrySet = false;
   for (uint8_t i = 0; i < NUM_WIFI_CREDENTIALS; i++) {

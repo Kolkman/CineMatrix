@@ -14,8 +14,6 @@ public:
     textPosition_t getPosition();
     textEffect_t getEffect();
     uint16_t getSpeed();
-    char * getWifiSSID();
-    char * getWifiPass();
     bool stateChange();
 private:
     int elementID;

@@ -19,10 +19,15 @@
 
 #define MIN_AP_PASSWORD_SIZE 8
 #define DNS_PORT 53
-#define RFC952_HOSTNAME_MAXLEN                                                 \
-  63 // HOSTNAME can be up to 255 chars, but we'll take DNS label length.
+#define RFC952_HOSTNAME_MAXLEN  63 // HOSTNAME can be up to 255 chars, but we'll take DNS label length.
      // (longer than  in original code)
+#ifndef RFC952_HOSTNAME
+#define RFC952_HOSTNAME "CineMatrix"
+#endif
+
+
 #define MAX_WIFI_CHANNEL 13
+#define ALWAYS_START_WITH_PORTAL true
 #define CONFIGPORTAL_TIMEOUT 60 * 1000
 #define WIFI_MULTI_CONNECT_WAITING_MS                                          \
   10 * 1000 // MultiWifi reconnects after 10 seconds.

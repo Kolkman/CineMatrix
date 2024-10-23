@@ -413,7 +413,7 @@ input {
 }
 #resetdiv {
     color: var(--baseColor);
-    background-color: var(--bgcolorHighlight);
+    background-color: rgba(255, 0, 0, 0.645);
 } 
 #resetdiv:hover {
     background-color: var(--buttonHoverColor);

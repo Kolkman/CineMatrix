@@ -11,7 +11,13 @@
 #define ELEGANT_OTA true
 #endif
 
+
+
+
 #define COOKIENAME "CineMatrix_ID"
+
+
+
 
 #include "wifiManager.h"
 #include <MD_Parola.h>
@@ -32,9 +38,7 @@ class MatrixConfig {
 public:
   MatrixConfig();
   String passForSSID(String);
-  char wifiSSID[33];
-  char wifiPASS[33];
-  bool defaultPASS;
+
   bool prepareFS();
   bool loadConfig();  // load current config to disk (limited set of vallues)
   bool saveConfig();  // save current config to disk (limited set of vallues)

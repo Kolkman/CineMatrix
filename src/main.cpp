@@ -77,24 +77,8 @@ void setup() {
   }
 
 
-
-  // Print ESP Local IP Address
-//  LOGINFO3("Setting up WIFI with SSID: ", myState.getWifiSSID(),  " and password:", myState.getWifiPass());
-//  WiFi.softAP(myState.getWifiSSID(), myState.getWifiPass());
-
-
   myInterface.setupWebSrv(&wifiMngr);
 
-
-
-
-
-  //{
-  //  IPAddress ip, netmask;
-  //  ip.fromString(WEB_IP);
-  //  netmask.fromString(WEB_NETMASK);
-  //  WiFi.softAPConfig(ip, ip, netmask);
- // }
 }
 
 void loop() {

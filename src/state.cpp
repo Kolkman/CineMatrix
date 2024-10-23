@@ -77,7 +77,7 @@ uint16_t MatrixState::getSpeed()
 {
     return myConfig.element[elementID].speed;
 }
-
+#ifdef REMOVE_THIS
 char * MatrixState::getWifiPass()
 {
     return myConfig.wifiPASS;
@@ -86,3 +86,4 @@ char * MatrixState::getWifiPass()
 char * MatrixState::getWifiSSID(){
     return myConfig.wifiSSID;
 }
+#endif

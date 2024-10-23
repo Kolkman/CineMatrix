@@ -6,9 +6,7 @@
 
 MatrixConfig::MatrixConfig() {
   LOGDEBUG0("MatrixConfig constructor")
-  defaultPASS = true;
-  strcpy(wifiSSID, WIFI_SSID);
-  strcpy(wifiPASS, WIFI_PASS);
+  
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {
     strcpy(element[i].text, "");
     element[i].effect = PA_SCROLL_LEFT;
@@ -26,14 +24,12 @@ MatrixConfig::MatrixConfig() {
   WM_AP_IPconfig._ap_static_sn = {255, 255, 255, 0};
 
   // Default
-  strcpy(element[0].text, "Connect to Wifi network ");
-  strcat(element[0].text, WIFI_SSID);
-  strcpy(element[1].text, "The WIFI Password is: ");
-  strcat(element[1].text, WIFI_PASS);
-
-  strcpy(element[2].text, "Browse to http:://");
-  strcat(element[2].text, WEB_IP);
-  strcat(element[2].text, "/");
+  strcpy(element[0].text, "");
+  //strcat(element[0].text, WIFI_SSID);
+  strcpy(element[1].text, "");
+  
+  strcpy(element[2].text, "");
+  
 
   LOGINFO(element[0].text);
 }
@@ -114,17 +110,7 @@ bool MatrixConfig::loadConfig() {
     }
   }
 
-  {
-    strncpy(wifiSSID, jsonDocument["wifiSSID"], 32);
-    wifiSSID[33] = '\0';
-  }
-  if (jsonDocument["wifiPASS"]) {
-    Serial.print("Config file WifiPass:");
-
-    strncpy(wifiPASS, jsonDocument["wifiPASS"], 32);
-    wifiPASS[33] = '\0';
-    Serial.println(wifiPASS);
-  }
+ #ifdef REMOVE_THIS
   if (strcmp(wifiPASS, WIFI_PASS)) // Comparing variable to define
   {
 
@@ -157,6 +143,7 @@ bool MatrixConfig::loadConfig() {
     LOGINFO0("DEFAULT WIFI PASSWORD");
     defaultPASS = true;
   }
+  #endif
 
   return true;
 }
@@ -164,8 +151,10 @@ bool MatrixConfig::loadConfig() {
 bool MatrixConfig::saveConfig() {
   DynamicJsonDocument jsonDocument(CONFIG_BUF_SIZE);
   JsonObject root = jsonDocument.to<JsonObject>();
+  #ifdef REMOVE_THIS
   root["wifiSSID"] = wifiSSID;
   root["wifiPASS"] = wifiPASS;
+#endif
 
   JsonArray elements = root.createNestedArray("elements");
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {

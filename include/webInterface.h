@@ -20,7 +20,7 @@ class MatrixConfig; // Forward declaration
 
 class WebInterface {
 public:
-  WebInterface(MatrixConfig *, const char *username = "",
+  WebInterface(MatrixConfig *, 
                const char *password = "");
   ~WebInterface();
 
@@ -32,10 +32,10 @@ public:
   MatrixConfig *myConfig;
  
   bool _waitingForClientAction = false;
+  bool _IPnotSetYet=false;
   void InitPages();
 
 private:
-  String _username;
   String _password;
   bool _authRequired = false;
   // HTTPUpdateServer *httpUpdater;

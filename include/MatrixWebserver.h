@@ -13,14 +13,14 @@
 class MatrixWebServer : public AsyncWebServer
 {
 public:
-    MatrixWebServer(uint16_t, const char *, const char *);
+    MatrixWebServer(uint16_t, const char *);
     bool authRequired;
 
     void setPassword(const char *);
-    void setUsername(const char *);
+
 
     void authenticate(AsyncWebServerRequest *);
-    char *getUsername();
+
     char *getPassword();
     bool is_authenticated(AsyncWebServerRequest *);
   
@@ -29,7 +29,6 @@ public:
   
   
 private:
-    char username[CREDENTIAL_LENGTH + 1];
     char password[CREDENTIAL_LENGTH + 1];
 };
 
