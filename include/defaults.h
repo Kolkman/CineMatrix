@@ -12,7 +12,7 @@
 
 #define DEFAULT_SPEED 40
 
-
+#define CONFIGPORTAL_TIMEOUT 10 * 1000 // When configured the Configportal will stay up for a wee bt
 
 #define TEXTLENGTH 256 // Maximum length of text to be displayed
 

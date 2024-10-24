@@ -10,7 +10,8 @@ all:include/pages/CineMatrix.css.h \
 	include/pages/networkConfigPage.js.h \
 	include/pages/configDone.html.h \
 	include/pages/redCircleCrossed.svg.h\
-	include/pages/WebLogin.html.h 
+	include/pages/WebLogin.html.h \
+	include/pages/helpers.js.h
 	@exec true 
 
 
@@ -36,6 +37,10 @@ include/pages/networkSetup.html.h: WEBsources/networkSetup.html
 	@./ProduceDefine.py $< text/html\;charset=UTF-8 > $@
 
 include/pages/networkConfigPage.js.h: WEBSources/networkConfigPage-min.js
+	@./ProduceDefine.py $< text/javascript  > $@
+
+
+include/pages/helpers.js.h: WEBSources/helpers-min.js
 	@./ProduceDefine.py $< text/javascript  > $@
 
 

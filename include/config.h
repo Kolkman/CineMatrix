@@ -8,11 +8,10 @@
 #define FORMAT_SPIFFS_IF_FAILED true
 #ifndef DEFAULT_SPEED
 #define DEFAULT_SPEED 75
-#define ELEGANT_OTA true
 #endif
+# define DEFAULTPASS "CineMatrix"
 
-
-
+#define WEBPASS_BUFF_SIZE 32
 
 #define COOKIENAME "CineMatrix_ID"
 
@@ -38,7 +37,7 @@ class MatrixConfig {
 public:
   MatrixConfig();
   String passForSSID(String);
-
+  char webPass[WEBPASS_BUFF_SIZE+1];
   bool prepareFS();
   bool loadConfig();  // load current config to disk (limited set of vallues)
   bool saveConfig();  // save current config to disk (limited set of vallues)

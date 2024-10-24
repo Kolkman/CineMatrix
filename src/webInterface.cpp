@@ -7,6 +7,7 @@
 
 #include "pages/WebLogin.html.h"
 #include "pages/captivePortal.html.h"
+#include "pages/helpers.js.h"
 #include "pages/networkConfigPage.js.h"
 #include "pages/networkSetup.html.h"
 #include "pages/redCircleCrossed.svg.h"
@@ -88,6 +89,7 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
   // Static pages
   // from the various include/pages/*.h files come the following definitions.
   DEF_HANDLE_CineMatrix_css;
+  DEF_HANDLE_helpers_js;
 
   ElegantOTA.begin(server);
 
@@ -106,7 +108,9 @@ void WebInterface::InitPages() {
       std::bind(&WebInterface::handleLogout, this, std::placeholders::_1));
 
   DEF_HANDLE_WebLogin_html;
-  DEF_HANDLE_CineMatrix_css DEF_HANDLE_redCircleCrossed_svg;
+  DEF_HANDLE_CineMatrix_css;
+  DEF_HANDLE_redCircleCrossed_svg;
+  DEF_HANDLE_helpers_js;
   /*
 
       DEF_HANDLE_EspressoMachine_svg;
@@ -150,6 +154,12 @@ void WebInterface::handleReset(AsyncWebServerRequest *request) {
   ESP.restart();
 }
 
+void WebInterface::handlePasswordReset(AsyncWebServerRequest *request) {
+  strncpy(myConfig->webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
+  myConfig->saveConfig();
+  request->redirect("/index.html");
+}
+
 void WebInterface::handleRoot(AsyncWebServerRequest *request) {
   request->redirect("/index.html");
 }
@@ -159,94 +169,89 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
   struct PositionStruct_t PositionEntry[] = {
       {PA_LEFT, "LEFT"}, {PA_CENTER, "CENTER"}, {PA_RIGHT, "RIGHT"}};
   struct EffectStruct_t EffectEntry[] = {
-      {PA_NO_EFFECT,
-       "No Effect"},       // "Used as a place filler executes no operation"
-      {PA_PRINT, "Print"}, //  "Text just appears (printed)"
-      {PA_SCROLL_UP, "Scroll Up"}, //  "Text scrolls up through the display"
-      {PA_SCROLL_DOWN,
-       "Scroll Down"}, //  "Text scrolls down through the display"
-      {PA_SCROLL_LEFT,
-       "Scroll Left"}, //  "Text scrolls right to left on the display"
-      {PA_SCROLL_RIGHT,
-       "Scroll Right"}, //  "Text scrolls left to right on the display"
+    {PA_NO_EFFECT,
+     "No Effect"},       // "Used as a place filler executes no operation"
+    {PA_PRINT, "Print"}, //  "Text just appears (printed)"
+    {PA_SCROLL_UP, "Scroll Up"},     //  "Text scrolls up through the display"
+    {PA_SCROLL_DOWN, "Scroll Down"}, //  "Text scrolls down through the display"
+    {PA_SCROLL_LEFT,
+     "Scroll Left"}, //  "Text scrolls right to left on the display"
+    {PA_SCROLL_RIGHT,
+     "Scroll Right"}, //  "Text scrolls left to right on the display"
 #if ENA_SPRITE
-      {PA_SPRITE,
-       "Movie"}, //  "Text enters and exits using user defined sprite"
+    {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-      {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
-                           //  from the right"
-      {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
-                           //  alternate direction (U/D)"
-      {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
-                           //  intensity setting"
-      {PA_DISSOLVE,
-       "Dissolve"},          //  "Text dissolves from one display to another"
-      {PA_BLINDS, "Blinds"}, //  "Text is replaced behind vertical blinds"
-      {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
-#endif                            // ENA_MISC
+    {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
+                         //  from the right"
+    {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
+                         //  alternate direction (U/D)"
+    {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
+                         //  intensity setting"
+    {PA_DISSOLVE, "Dissolve"},  //  "Text dissolves from one display to another"
+    {PA_BLINDS, "Blinds"},      //  "Text is replaced behind vertical blinds"
+    {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
+#endif                          // ENA_MISC
 #if ENA_WIPE
-      {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
-                         // like it is wiped on and off"
-      {PA_WIPE_CURSOR,
-       "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
-#endif                 // ENA_WIPES
+    {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
+                       // like it is wiped on and off"
+    {PA_WIPE_CURSOR,
+     "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
+#endif               // ENA_WIPES
 #if ENA_SCAN
-      {PA_SCAN_HORIZ,
-       "Scan Horizontal led"}, //  "Scan the LED column one at a time then
-                               //  appears/disappear at end"
-      {PA_SCAN_HORIZX,
-       "Scan Horizontal blank"}, //  "Scan a blank column through the text one
-                                 //  column at a time then appears/disappear at
-                                 //  end"
-      {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
-                                           //  then appears/disappear at end"
-      {PA_SCAN_VERTX,
-       "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
-                               //  a time then appears/disappear at end"
-#endif                         // ENA_SCAN
+    {PA_SCAN_HORIZ,
+     "Scan Horizontal led"}, //  "Scan the LED column one at a time then
+                             //  appears/disappear at end"
+    {PA_SCAN_HORIZX,
+     "Scan Horizontal blank"}, //  "Scan a blank column through the text one
+                               //  column at a time then appears/disappear at
+                               //  end"
+    {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
+                                         //  then appears/disappear at end"
+    {PA_SCAN_VERTX,
+     "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
+                             //  a time then appears/disappear at end"
+#endif                       // ENA_SCAN
 #if ENA_OPNCLS
-      {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
-                               // display},  towards the ends"
-      {PA_OPENING_CURSOR,
-       "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
-      {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
-                               // display}, towards the middle"
-      {PA_CLOSING_CURSOR,
-       "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
-#endif                    // ENA_OPNCLS
+    {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
+                             // display},  towards the ends"
+    {PA_OPENING_CURSOR,
+     "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
+    {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
+                             // display}, towards the middle"
+    {PA_CLOSING_CURSOR,
+     "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
+#endif                  // ENA_OPNCLS
 #if ENA_SCR_DIA
-      {PA_SCROLL_UP_LEFT,
-       "Scroll Up&Left"}, //  "Text moves in/out in a diagonal
-                          //  path up and left (North East)"
-      {PA_SCROLL_UP_RIGHT,
-       "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
-                          //  path up and right (North West)"
-      {PA_SCROLL_DOWN_LEFT,
-       "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
-                           //  left (South East)"
-      {PA_SCROLL_DOWN_RIGHT,
-       "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
-                             //  right (North West)"
-#endif                       // ENA_SCR_DIA
+    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},  //  "Text moves in/out in a diagonal
+                                            //  path up and left (North East)"
+    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
+                                            //  path up and right (North West)"
+    {PA_SCROLL_DOWN_LEFT,
+     "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
+                         //  left (South East)"
+    {PA_SCROLL_DOWN_RIGHT,
+     "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
+                           //  right (North West)"
+#endif                     // ENA_SCR_DIA
 #if ENA_GROW
-      {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
-                                  //  from the top down"
-      {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
-                                  // shrinks from the bottom up"}
-#endif                            // ENA_
+    {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
+                                //  from the top down"
+    {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
+                                // shrinks from the bottom up"}
+#endif                          // ENA_
   };
-
-  bool wifiConfReq = false;
-  for (uint8_t i = 0; i < request->args(); i++) {
-    if (request->argName(i) == "wificonfig")
-      wifiConfReq = true;
-  }
   String message = htmlHeader;
-
   message += "<H1>CineMatrix</H1>";
+  bool advancedReq = false;
+  for (uint8_t i = 0; i < request->args(); i++) {
+    if (request->argName(i) == "advanced")
+      advancedReq = true;
+  }
 
-  if (!myConfig->defaultPass && !wifiConfReq) {
+  LOGDEBUG1("Creating index page while ",
+            strcmp(myConfig->webPass, DEFAULTPASS));
+  if (strcmp(myConfig->webPass, DEFAULTPASS)) {
 
     message += "<div class=\"matrixform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
@@ -316,39 +321,41 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
     message += "<div id=\"advancedbutton\"> <button "
                "onclick=\"advancedButton()\">Advanced "
                "Configuration</button><script>function advancedButton() {  "
-               "location.replace(\"/index.html?wificonfig\")}</script></div>";
+               "location.replace(\"/index.html?advanced\")}</script></div>";
 
-  } else
+  } else {
 
-  {
-
-    if (myConfig->defaultPass)
-      message += "<div class=\"warning\"> You must change the WEB "
-                 "password!</div> <!-- div class=warning--> ";
+    message += "<div class=\"warning\"> You must change the WEB "
+               "password!</div> <!-- div class=warning--> ";
 
     message += "<div class=\"webpassform\"> \n";
-    message += "<form action=\"/submit.html\"> \n";
+    message += "<form action=\"/submit.html\" onsubmit=\"return "
+               "CompareFields(this)\"> \n";
     message += "<div class=\"webpassentry\">";
     message += "<div class=\"webpassinput\">";
     message += "<div class=\"webpasslabel\"> <label for=\"webpass\">password"
                ":</label></div> <!-- div class=webpasslabel -->\n";
-    message += "<div class=\"webpassfield\"> <input id=\"webpass1\" name=\"webpass\" maxlength=32  required onchange=\"CompareFields('webpass1','webpass2',true)\" ></div> <!-- div class=webpassfield -->\n";
+    message += "<div class=\"webpassfield\"> <input id=\"field1\" "
+               "name=\"webpass1\" maxlength=32   ></div> "
+               "<!-- div class=webpassfield -->\n";
     message += "</div> <!-- div  class=webpassinput -->\n";
     message += "<div class=\"webpassinput\">";
     message += "<div class=\"webpasslabel\"> <label for=\"pass\"> repeat "
                "password:</label></div> <!-- div class=webpasslabel -->\n";
-    message += "<div class=\"webpassfield\"><input id=\"webpass2\" name=\"pass\" maxlength=32 required onchange=\"CompareFields('webpass1','webpass2',true)\"></div><!-- div class=webpassfield -->\n";
+    message +=
+        "<div class=\"webpassfield\"><input id=\"field2\" name=\"webpass2\" "
+        "maxlength=32 required >"
+        "</div><!-- div class=webpassfield -->\n";
     message += "</div> <!-- div  class=webpassinput -->\n";
     message += "</div><!--div class=webpassentry -->\n";
     message += " <div class=\"submitbutton\"> <input type=\"submit\" "
                "value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
 
-    if (!myConfig->defaultPass)
-      message +=
-          "<div id=\"advancedbutton\"> <button "
-          "onclick=\"updateButton()\">Update</button><script>function "
-          "updateButton() {  location.replace(\"/update\")}</script></div>";
+    message +=
+        "<div id=\"advancedbutton\"> <button "
+        "onclick=\"updateButton()\">Update</button><script>function "
+        "updateButton() {  location.replace(\"/update\")}</script></div>";
 
     message +=
         "<div id=\"advancedbutton\"> <button "
@@ -365,99 +372,59 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
 }
 
 void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
-  String message = htmlHeader;
 
   bool reconf = false;
-  bool wifiChange = false;
-
   for (uint8_t i = 0; i < request->args(); i++) {
-#ifdef REMOVE_THIS
-    if (request->argName(i) == "pass") {
+    const AsyncWebParameter *p = request->getParam(i);
+    if (p->name() == "webpass1") {
+      // check on consistency
+      for (uint8_t j = 0; j < request->args(); j++) {
+        const AsyncWebParameter *r = request->getParam(j);
+        if ((r->name() == "webpass2") && p->value() == r->value()) {
 
-      if (!request->arg(i).equals(myConfig->wifiPASS)) {
-        wifiChange = true;
-        Serial.println("Changing Wifi Password to");
-        request->arg(i).toCharArray(myConfig->wifiPASS, 32);
-        Serial.println(myConfig->wifiPASS);
-        reconf = true;
+          if (!p->value().equals(myConfig->webPass)) {
+            strncpy(myConfig->webPass, p->value().c_str(), WEBPASS_BUFF_SIZE);
+            LOGINFO1("Changing web password to:", (myConfig->webPass));
+            if (strcmp(myConfig->webPass, DEFAULTPASS))
+              reconf = true;
+          }
+        }
       }
-
-    } else if (request->argName(i) == "ssid") {
-
-      if (!request->arg(i).equals(myConfig->wifiSSID)) {
-        wifiChange = true;
-        Serial.println("Changing Wifi Password to");
-        request->arg(i).toCharArray(myConfig->wifiSSID, 32);
-        Serial.println(myConfig->wifiSSID);
-        reconf = true;
-      }
-    } else
-#endif
-    {
-
+    } else {
       for (int j = 0; j < MAXTEXTELEMENTS; j++) {
-        if (request->argName(i) == "textentry" + String(j)) {
-          request->arg(i).toCharArray(myConfig->element[j].text,
-                                      TEXTLENGTH + 1);
+        if (p->name() == "textentry" + String(j)) {
+          p->value().toCharArray(myConfig->element[j].text, TEXTLENGTH + 1);
           reconf = true;
         }
 
-        else if (request->argName(i) == "effect" + String(j)) {
+        else if (p->name() == "effect" + String(j)) {
           // We should be checking this input against the allowed values
           // But the effect is simply that nothing is displayed
-          myConfig->element[j].effect = (textEffect_t)request->arg(i).toInt();
+          myConfig->element[j].effect = (textEffect_t)p->value().toInt();
           reconf = true;
         }
 
-        else if (request->argName(i) == "position" + String(j)) {
+        else if (p->name() == "position" + String(j)) {
 
-          myConfig->element[j].position =
-              (textPosition_t)request->arg(i).toInt();
+          myConfig->element[j].position = (textPosition_t)p->value().toInt();
           reconf = true;
         }
 
-        else if (request->argName(i) == "speed" + String(j)) {
+        else if (p->name() == "speed" + String(j)) {
 
-          myConfig->element[j].speed = request->arg(i).toInt();
+          myConfig->element[j].speed = p->value().toInt();
           reconf = true;
-        } else if (request->argName(i) == "repeat" + String(j)) {
-          myConfig->element[j].repeat = request->arg(i).toInt();
+        } else if (p->name() == "repeat" + String(j)) {
+          myConfig->element[j].repeat = p->value().toInt();
           reconf = true;
         }
       }
     }
   }
-  if (reconf) {
-    myConfig->saveConfig();
-    message += "<p> New Config Saved <p>";
-  } else {
-    message += "<p> No Changes</p>";
-  }
-  if (wifiChange) {
-    message += "<div class=\"reconfig\"> <p>WifiSettings only change after you "
-               "have reset the device.</p>\n";
-#ifdef REMOVE_THIS
-    message +=
-        "<p>Make sure you make note of your SSID and Password. If you forget "
-        "the password you will have to reprogram your device</p>\n";
 
-    message += "<div class=\"wifireport\"><table>\n";
-    message += "<tr><td>WiFi SSID</td><td>" + String(myConfig->wifiSSID) +
-               "</td></tr>\n";
-    message += "<tr><td>WiFi Password</td><td>" + String(myConfig->wifiPASS) +
-               "</td></tr>\n";
-    message += "</table> </div>\n";
-#endif
-    message +=
-        " <button onclick=\"resetButton()\">Reset</button><script>function "
-        "resetButton() {  location.replace(\"/reset\")}</script></div>";
-  } else {
-    message +=
-        " <button onclick=\"indexButton()\">Back Home</button><script>function "
-        "indexButton() {  location.replace(\"/index.html\")}</script>";
-  }
-  message += htmlFooter;
-  request->send(200, "text/html", message);
+  if (reconf)
+    myConfig->saveConfig();
+  request->redirect("/");
 };
 
 void WebInterface::handleFile(AsyncWebServerRequest *request,
@@ -489,6 +456,11 @@ void WebInterface::setConfigPortalPages() {
   server->on("/networkSetup.html", HTTP_GET,
              std::bind(&WebInterface::handleNetworkSetup, this,
                        std::placeholders::_1));
+
+  server->on("/resetPassword.html", HTTP_GET,
+             std::bind(&WebInterface::handlePasswordReset, this,
+                       std::placeholders::_1));
+
   server->on("/exitconfig", HTTP_GET, [&](AsyncWebServerRequest *request) {
     _waitingForClientAction = false;
     request->redirect("/");
@@ -670,8 +642,8 @@ void WebInterface::handleCaptivePortal(AsyncWebServerRequest *request) {
 /**
    HTTPD redirector
    Redirect to captive portal if we got a request for another domain.
-   Return true in that case so the page handler do not try to handle the request
-   again.
+   Return true in that case so the page handler do not try to handle the
+   request again.
 */
 bool WebInterface::captivePortal(AsyncWebServerRequest *request) {
 

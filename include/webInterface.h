@@ -13,7 +13,7 @@
 #endif
 
 #ifndef COOKIEMAXAGE
-#define COOKIEMAXAGE 7200
+#define COOKIEMAXAGE 86400
 #endif
 
 class MatrixConfig; // Forward declaration
@@ -42,6 +42,7 @@ private:
   void handleIndex(AsyncWebServerRequest *);
   void handleRoot(AsyncWebServerRequest *);
   void handleReset(AsyncWebServerRequest *);
+  void handlePasswordReset(AsyncWebServerRequest *);
   void handleSubmission(AsyncWebServerRequest *);
   void handleFile(AsyncWebServerRequest *, const char *, const unsigned char *,
                   const size_t);
@@ -64,34 +65,8 @@ const char htmlHeader[] =
     "content=\"width=device-width,initial-scale=1.0\"/><link "
     "rel=\"stylesheet\" type=\"text/css\" href=\"CineMatrix.css\" "
     "media=\"all\"/>"
-    "<script type =\"text/javascript\">"
-    "function    CompareFields(f1, f2, caseinsensitive) {"
-    "var val1 = document.getElementById(f1).value;"
-    "var val2 = document.getElementById(f2).value;"
-    "if (caseinsensitive) {"
-    "  val1 = val1.toUpperCase();"
-    "  val2 = val2.toUpperCase();"
-    "}"
-    "val1 = val1.replace(/ ^\\s * /, "
-    ");"
-    "val1 = val1.replace(/\\s * $ /, "
-    ");"
-    "if (val1.length == 0) {"
-    "  return;"
-    "}"
-    "val2 = val2.replace(/ ^\\s * /, "
-    ");"
-    "val2 = val2.replace(/\\s * $ /, "
-    ");"
-    "if (val2.length == 0) {"
-    "  return;"
-    "}"
-    "if (val1 == val2) {"
-    "return;"
-    "  }"
-    "   alert(\"The form fields need to be identical.\");"
-    "}"
-    "</script></head> <body> ";
+    " <script src=\"helpers.js\"></script>"
+    "</head> <body> ";
 const char htmlFooter[] = "</body></html>";
 
 struct EffectStruct_t {

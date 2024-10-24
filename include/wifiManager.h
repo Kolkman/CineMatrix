@@ -3,7 +3,7 @@
 #define wifiManager_h
 
 #include <ESPAsyncDNSServer.h>
-
+#include "defaults.h"
 #include "WiFiMulti.h"
 #include <MD_Parola.h>
 // #include "webinterface.h"
@@ -28,7 +28,11 @@
 
 #define MAX_WIFI_CHANNEL 13
 #define ALWAYS_START_WITH_PORTAL true
-#define CONFIGPORTAL_TIMEOUT 10 * 1000
+
+#ifndef CONFIGPORTAL_TIMEOUT
+#define CONFIGPORTAL_TIMEOUT 60 * 1000
+#endif
+
 #define WIFI_MULTI_CONNECT_WAITING_MS                                          \
   10 * 1000 // MultiWifi reconnects after 10 seconds.
 #define WIFI_MULTI_1ST_CONNECT_WAITING_MS 3 * 1000

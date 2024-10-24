@@ -6,7 +6,8 @@
 
 MatrixConfig::MatrixConfig() {
   LOGDEBUG0("MatrixConfig constructor")
-  defaultPass=true;
+  strncpy(webPass, DEFAULTPASS,WEBPASS_BUFF_SIZE);
+
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {
     strcpy(element[i].text, "");
     element[i].effect = PA_SCROLL_LEFT;
@@ -25,11 +26,10 @@ MatrixConfig::MatrixConfig() {
 
   // Default
   strcpy(element[0].text, "");
-  //strcat(element[0].text, WIFI_SSID);
+  // strcat(element[0].text, WIFI_SSID);
   strcpy(element[1].text, "");
-  
+
   strcpy(element[2].text, "");
-  
 
   LOGINFO(element[0].text);
 }
@@ -76,12 +76,18 @@ bool MatrixConfig::loadConfig() {
 
   for (int i = 0; i < 4; i++) {
     // itterate over the IP4 tupples
-    if (jsonDocument["ap_static_ip"][i])  WM_AP_IPconfig._ap_static_ip[i] = jsonDocument["ap_static_ip"][i];
-    if (jsonDocument["ap_static_gw"][i]) WM_AP_IPconfig._ap_static_gw[i] = jsonDocument["ap_static_gw"][i];
-    if (jsonDocument["ap_static_gw"][i]) WM_AP_IPconfig._ap_static_sn[i] = jsonDocument["ap_static_gw"][i];
-    if (jsonDocument["sta_static_ip"][i]) WM_STA_IPconfig._sta_static_ip[i] = jsonDocument["sta_static_ip"][i];
-    if (jsonDocument["sta_static_gw"][i]) WM_STA_IPconfig._sta_static_gw[i] = jsonDocument["sta_static_gw"][i];
-    if (jsonDocument["sta_static_sn"][i]) WM_STA_IPconfig._sta_static_sn[i] = jsonDocument["sta_static_sn"][i];
+    if (jsonDocument["ap_static_ip"][i])
+      WM_AP_IPconfig._ap_static_ip[i] = jsonDocument["ap_static_ip"][i];
+    if (jsonDocument["ap_static_gw"][i])
+      WM_AP_IPconfig._ap_static_gw[i] = jsonDocument["ap_static_gw"][i];
+    if (jsonDocument["ap_static_gw"][i])
+      WM_AP_IPconfig._ap_static_sn[i] = jsonDocument["ap_static_gw"][i];
+    if (jsonDocument["sta_static_ip"][i])
+      WM_STA_IPconfig._sta_static_ip[i] = jsonDocument["sta_static_ip"][i];
+    if (jsonDocument["sta_static_gw"][i])
+      WM_STA_IPconfig._sta_static_gw[i] = jsonDocument["sta_static_gw"][i];
+    if (jsonDocument["sta_static_sn"][i])
+      WM_STA_IPconfig._sta_static_sn[i] = jsonDocument["sta_static_sn"][i];
 #if USE_CONFIGURABLE_DNS
     WM_STA_IPconfig._sta_static_dns1[i] = jsonDocument["sta_static_dns1"][i];
     WM_STA_IPconfig._sta_static_dns2[i] = jsonDocument["sta_static_dns2"][i];
@@ -109,10 +115,12 @@ bool MatrixConfig::loadConfig() {
         break;
     }
   }
-
-  if (strcmp(webPass.c_str(), "")) // Comparing variable to define
+  if (jsonDocument["webpass"])
+   strncpy(webPass,   jsonDocument["webpass"],WEBPASS_BUFF_SIZE);
+    
+  if (!strcmp(webPass,DEFAULTPASS)) // Comparing variable to define
   {
-    LOGINFO0("Web Password not set")
+    LOGINFO1("Web Password not set",webPass)
 
     // Only use texts if the default password is not set.
     int cntr = 0;
@@ -129,19 +137,14 @@ bool MatrixConfig::loadConfig() {
       cntr++;
     }
 
-   
-      strcpy(element[0].text, "Connect to the server to change your password ");
-  
-    
-  } 
-
+    strcpy(element[0].text, "Connect to the server to change your password ");
+  }
   return true;
 }
 
 bool MatrixConfig::saveConfig() {
   DynamicJsonDocument jsonDocument(CONFIG_BUF_SIZE);
   JsonObject root = jsonDocument.to<JsonObject>();
-
 
   root["webpass"] = webPass;
 

@@ -1,0 +1,1 @@
+function CompareFields(e){return e.field1.value==e.field2.value||(alert("Inputs don't match!"),!1)}

@@ -41,7 +41,7 @@ finally:
 print("#ifndef WEB"+_name+"_H")
 print("#define WEB"+_name+"_H")
 print()
-# server->on("/EspressoMachine.svg", HTTP_GET, std::bind(&WebInterface::handleEspressoSVG, this, std::placeholders::_1));
+# server->on("/FILENAME.svg", HTTP_GET, std::bind(&WebInterface::handleFileName, this, std::placeholders::_1));
 #
 _compr = gzip.compress(bytes(_data, 'utf-8'))
 
