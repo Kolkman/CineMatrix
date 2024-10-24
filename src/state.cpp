@@ -60,7 +60,7 @@ bool MatrixState::stateChange()
 
 char *MatrixState::getText()
 {
-    return myConfig.element[elementID].text;
+    return myConfig.element[elementID].matrixtext;
 }
 
 textPosition_t MatrixState::getPosition()

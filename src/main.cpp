@@ -44,7 +44,7 @@ MD_Parola Display =
 
 
 MatrixState myState;
-WebInterface myInterface(&myState.myConfig);
+webInterface myInterface(&myState.myConfig);
 WiFiManager wifiMngr(&myInterface);
 char firmwareString[50];
 

@@ -18,15 +18,15 @@
 
 class MatrixConfig; // Forward declaration
 
-class WebInterface {
+class webInterface {
 public:
-  WebInterface(MatrixConfig *, const char *password = "");
-  ~WebInterface();
+  webInterface(MatrixConfig *, const char *password = "");
+  ~webInterface();
 
   void setupWebSrv(WiFiManager *);
   void setConfigPortalPages();
   void unsetConfigPortalPages();
-
+  void requireAuthorization(bool);
   MatrixWebServer *server;
   MatrixConfig *myConfig;
 
@@ -37,6 +37,8 @@ public:
 private:
   String _password;
   bool _authRequired = false;
+
+  bool authorize(AsyncWebServerRequest *);
   // HTTPUpdateServer *httpUpdater;
   void handleNotFound(AsyncWebServerRequest *);
   void handleIndex(AsyncWebServerRequest *);

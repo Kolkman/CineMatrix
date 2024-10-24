@@ -11,7 +11,7 @@ webInterfaceAPI webAPI;
 webInterfaceAPI::webInterfaceAPI() {
   server = nullptr;
   content_len = 0;
-  mustAuthenticate = true;
+  _authRequired = true;
 }
 
 void webInterfaceAPI::begin(MatrixWebServer *s, MatrixConfig *conf) {
@@ -56,7 +56,7 @@ void webInterfaceAPI::handleSet(AsyncWebServerRequest *request) {
   LOGDEBUG1("API SET with", request->url());
   char message[2048]; // This is sufficiently big to store all key:val
                       // combinations
-  if (!server->is_authenticated(request) && mustAuthenticate) {
+  if (!server->is_authenticated(request) && _authRequired) {
     LOGINFO0("API not authenticed")
     strcpy(message, "{\"authenticated\": false}");
     request->send(200, "application/json", message);
@@ -182,7 +182,7 @@ void webInterfaceAPI::handleConfigFile(AsyncWebServerRequest *request) {
 
 void webInterfaceAPI::handleIsAuthenticated(AsyncWebServerRequest *request) {
   char message[32]; // This is sufficiently for any of the messages below
-  if (!server->is_authenticated(request) && mustAuthenticate) {
+  if (!server->is_authenticated(request) && _authRequired) {
     strcpy(message, "{\"authenticated\":false}");
   } else {
     strcpy(message, "{\"authenticated\":true}");
@@ -191,6 +191,6 @@ void webInterfaceAPI::handleIsAuthenticated(AsyncWebServerRequest *request) {
 }
 
 void webInterfaceAPI::requireAuthorization(bool require) {
-  mustAuthenticate = require;
+  _authRequired = require;
   return;
 }

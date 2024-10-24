@@ -15,7 +15,7 @@
 
 extern MD_Parola Display;
 
-WiFiManager::WiFiManager(WebInterface *_i) {
+WiFiManager::WiFiManager(webInterface *_i) {
   myInterface = _i;
   dnsServer = new AsyncDNSServer;
 }
@@ -173,14 +173,7 @@ LOGDEBUG1("Hostname set to ", RFC952_hostname);
   }
 
 
-  // TODO  myInterface->report(" Connecting to", "      WIFI");
-  /*
-      #if !USE_DHCP_IP
-          // New in v1.4.0
-          configWiFi(WM_STA_IPconfig);
-          //////
-      #endif
-  */
+
   int i = 0;
   WiFi.mode(WIFI_STA);
 

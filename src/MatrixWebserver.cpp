@@ -23,20 +23,21 @@ void MatrixWebServer::setPassword(const char *p = "") {
   strncpy(password, p, std::max(strlen(p), (size_t)(CREDENTIAL_LENGTH - 1)));
 }
 
-void MatrixWebServer::authenticate(AsyncWebServerRequest *request) {
+bool MatrixWebServer::authenticate(AsyncWebServerRequest *request) {
   {      
      LOGINFO1("authenticate for:", String(request->url())); 
         if (is_authenticated(request))
         {
 
             LOGINFO("Authentication Successful");
-            return;
+            return true;
         }
-        LOGINFO("Authentication Failed");
+        LOGINFO0("Authentication Failed");
         AsyncWebServerResponse *response = request->beginResponse(301); // Sends 301 redirect
         response->addHeader("Location", "/WebLogin.html?msg=Authentication Failed, you must log in.");
         response->addHeader("Cache-Control", "no-cache");
         request->send(response);
+        return false;
     }
 }
 
@@ -52,7 +53,7 @@ bool MatrixWebServer::is_authenticated(AsyncWebServerRequest *request) {
     //  token = sha1(token);
     String ck = (String)COOKIENAME + "=" + token;
     if (cookie.indexOf(ck) != -1) {
-      LOGINFO("    Authentication Successful");
+      LOGINFO0("    Authentication Successful");
       return true;
     }
     LOGINFO1("Cookiename:", COOKIENAME);

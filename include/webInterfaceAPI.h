@@ -16,7 +16,7 @@ private:
     MatrixWebServer *server;
     MatrixConfig * myConfig;
 
-    bool mustAuthenticate;
+    bool _authRequired;
     size_t content_len;
     void handleStatus(AsyncWebServerRequest *);
     void handleFirmware(AsyncWebServerRequest *);

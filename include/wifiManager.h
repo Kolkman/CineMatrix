@@ -84,11 +84,11 @@ typedef struct {
 
 class MatrixConfig; // Forward declaration
 
-class WebInterface; // Forward declaration
+class webInterface; // Forward declaration
 
 class WiFiManager : public WiFiMulti {
 public:
-  WiFiManager(WebInterface *);
+  WiFiManager(webInterface *);
   void setupWiFiAp(WiFi_AP_IPConfig *);
   void loopPortal();
   uint8_t connectMultiWiFi(MatrixConfig *);
@@ -98,7 +98,7 @@ public:
   // SSID and PW for Config Portal
 
 private:
-  WebInterface *myInterface;
+  webInterface *myInterface;
   String ApSSID;
   String ApPass;
   bool connect;

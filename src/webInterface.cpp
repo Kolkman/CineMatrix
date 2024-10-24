@@ -1,4 +1,5 @@
 #include "webInterface.h"
+#include "ESPAsyncWebServer.h"
 #include "config.h"
 #include "debug.h"
 #include "pgmspace.h"
@@ -16,16 +17,17 @@
 #include "pages/CineMatrix.css.h"
 #include <ElegantOTA.h>
 
-WebInterface::WebInterface(MatrixConfig *config, const char *password) {
+webInterface::webInterface(MatrixConfig *config, const char *password) {
   LOGDEBUG0("Webinterfce Constructor");
   _password = password;
   myConfig = config;
+  _authRequired = false;
   server = new MatrixWebServer(80, password);
 }
 
-WebInterface::~WebInterface() { LOGDEBUG0("Webinterfce Destructor"); }
+webInterface::~webInterface() { LOGDEBUG0("Webinterfce Destructor"); }
 
-void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
+void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
   LOGINFO0("Setting up Webserver");
 
   // We set this for later. Wnen there are no credentials set we want to keep
@@ -50,7 +52,6 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
         ->loopPortal(); /// Wait the configuration to be finished or timed out.
   }
 
-
   myConfig->loadConfig(); // To make sure we are in sync
   wifiMngr->connectMultiWiFi(myConfig);
   LOGDEBUG0("Resetting the Webserver");
@@ -68,18 +69,18 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
     }
   }
   server->onNotFound(
-      std::bind(&WebInterface::handleNotFound, this, std::placeholders::_1));
+      std::bind(&webInterface::handleNotFound, this, std::placeholders::_1));
   server->on("/", HTTP_GET,
-             std::bind(&WebInterface::handleRoot, this, std::placeholders::_1));
+             std::bind(&webInterface::handleRoot, this, std::placeholders::_1));
   server->on(
       "/reset", HTTP_GET,
-      std::bind(&WebInterface::handleReset, this, std::placeholders::_1));
+      std::bind(&webInterface::handleReset, this, std::placeholders::_1));
   server->on(
       "/index.html", HTTP_GET,
-      std::bind(&WebInterface::handleIndex, this, std::placeholders::_1));
+      std::bind(&webInterface::handleIndex, this, std::placeholders::_1));
   server->on(
       "/submit.html", HTTP_GET,
-      std::bind(&WebInterface::handleSubmission, this, std::placeholders::_1));
+      std::bind(&webInterface::handleSubmission, this, std::placeholders::_1));
   // respond to GET requests on URL /heap
   server->on("/heap", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
@@ -100,15 +101,15 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
   LOGINFO0("HTTP server started");
 }
 
-void WebInterface::InitPages() {
+void webInterface::InitPages() {
   server->onNotFound(
-      std::bind(&WebInterface::handleNotFound, this, std::placeholders::_1));
+      std::bind(&webInterface::handleNotFound, this, std::placeholders::_1));
   server->on(
       "/login", HTTP_POST,
-      std::bind(&WebInterface::handleLogin, this, std::placeholders::_1));
+      std::bind(&webInterface::handleLogin, this, std::placeholders::_1));
   server->on(
       "/logout", HTTP_GET,
-      std::bind(&WebInterface::handleLogout, this, std::placeholders::_1));
+      std::bind(&webInterface::handleLogout, this, std::placeholders::_1));
 
   DEF_HANDLE_WebLogin_html;
   DEF_HANDLE_CineMatrix_css;
@@ -123,7 +124,7 @@ void WebInterface::InitPages() {
       */
 }
 
-void WebInterface::handleNotFound(AsyncWebServerRequest *request) {
+void webInterface::handleNotFound(AsyncWebServerRequest *request) {
 
   String message = htmlHeader;
   message += "<H1>Error 400 <br/> File Not Found</H1>\n\n";
@@ -147,7 +148,7 @@ void WebInterface::handleNotFound(AsyncWebServerRequest *request) {
   request->send(404, "text/html", message);
 }
 
-void WebInterface::handleReset(AsyncWebServerRequest *request) {
+void webInterface::handleReset(AsyncWebServerRequest *request) {
   String message =
       "<head><meta http-equiv=\"refresh\" content=\"2;url=/\">\n<meta "
       "name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
@@ -157,93 +158,100 @@ void WebInterface::handleReset(AsyncWebServerRequest *request) {
   ESP.restart();
 }
 
-void WebInterface::handlePasswordReset(AsyncWebServerRequest *request) {
+void webInterface::handlePasswordReset(AsyncWebServerRequest *request) {
   strncpy(myConfig->webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
   myConfig->saveConfig();
   request->redirect("/");
 }
 
-void WebInterface::handleRoot(AsyncWebServerRequest *request) {
+void webInterface::handleRoot(AsyncWebServerRequest *request) {
   request->redirect("/index.html");
 }
 
-void WebInterface::handleIndex(AsyncWebServerRequest *request) {
+void webInterface::handleIndex(AsyncWebServerRequest *request) {
+
   // Following are Constructed from  MD_Parola.h
   struct PositionStruct_t PositionEntry[] = {
       {PA_LEFT, "LEFT"}, {PA_CENTER, "CENTER"}, {PA_RIGHT, "RIGHT"}};
   struct EffectStruct_t EffectEntry[] = {
-    {PA_NO_EFFECT,
-     "No Effect"},       // "Used as a place filler executes no operation"
-    {PA_PRINT, "Print"}, //  "Text just appears (printed)"
-    {PA_SCROLL_UP, "Scroll Up"},     //  "Text scrolls up through the display"
-    {PA_SCROLL_DOWN, "Scroll Down"}, //  "Text scrolls down through the display"
-    {PA_SCROLL_LEFT,
-     "Scroll Left"}, //  "Text scrolls right to left on the display"
-    {PA_SCROLL_RIGHT,
-     "Scroll Right"}, //  "Text scrolls left to right on the display"
+      {PA_NO_EFFECT,
+       "No Effect"},       // "Used as a place filler executes no operation"
+      {PA_PRINT, "Print"}, //  "Text just appears (printed)"
+      {PA_SCROLL_UP, "Scroll Up"}, //  "Text scrolls up through the display"
+      {PA_SCROLL_DOWN,
+       "Scroll Down"}, //  "Text scrolls down through the display"
+      {PA_SCROLL_LEFT,
+       "Scroll Left"}, //  "Text scrolls right to left on the display"
+      {PA_SCROLL_RIGHT,
+       "Scroll Right"}, //  "Text scrolls left to right on the display"
 #if ENA_SPRITE
-    {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
+      {PA_SPRITE,
+       "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-    {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
-                         //  from the right"
-    {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
-                         //  alternate direction (U/D)"
-    {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
-                         //  intensity setting"
-    {PA_DISSOLVE, "Dissolve"},  //  "Text dissolves from one display to another"
-    {PA_BLINDS, "Blinds"},      //  "Text is replaced behind vertical blinds"
-    {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
-#endif                          // ENA_MISC
+      {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
+                           //  from the right"
+      {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
+                           //  alternate direction (U/D)"
+      {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
+                           //  intensity setting"
+      {PA_DISSOLVE,
+       "Dissolve"},          //  "Text dissolves from one display to another"
+      {PA_BLINDS, "Blinds"}, //  "Text is replaced behind vertical blinds"
+      {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
+#endif                            // ENA_MISC
 #if ENA_WIPE
-    {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
-                       // like it is wiped on and off"
-    {PA_WIPE_CURSOR,
-     "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
-#endif               // ENA_WIPES
+      {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
+                         // like it is wiped on and off"
+      {PA_WIPE_CURSOR,
+       "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
+#endif                 // ENA_WIPES
 #if ENA_SCAN
-    {PA_SCAN_HORIZ,
-     "Scan Horizontal led"}, //  "Scan the LED column one at a time then
-                             //  appears/disappear at end"
-    {PA_SCAN_HORIZX,
-     "Scan Horizontal blank"}, //  "Scan a blank column through the text one
-                               //  column at a time then appears/disappear at
-                               //  end"
-    {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
-                                         //  then appears/disappear at end"
-    {PA_SCAN_VERTX,
-     "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
-                             //  a time then appears/disappear at end"
-#endif                       // ENA_SCAN
+      {PA_SCAN_HORIZ,
+       "Scan Horizontal led"}, //  "Scan the LED column one at a time then
+                               //  appears/disappear at end"
+      {PA_SCAN_HORIZX,
+       "Scan Horizontal blank"}, //  "Scan a blank column through the text one
+                                 //  column at a time then appears/disappear at
+                                 //  end"
+      {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
+                                           //  then appears/disappear at end"
+      {PA_SCAN_VERTX,
+       "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
+                               //  a time then appears/disappear at end"
+#endif                         // ENA_SCAN
 #if ENA_OPNCLS
-    {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
-                             // display},  towards the ends"
-    {PA_OPENING_CURSOR,
-     "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
-    {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
-                             // display}, towards the middle"
-    {PA_CLOSING_CURSOR,
-     "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
-#endif                  // ENA_OPNCLS
+      {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
+                               // display},  towards the ends"
+      {PA_OPENING_CURSOR,
+       "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
+      {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
+                               // display}, towards the middle"
+      {PA_CLOSING_CURSOR,
+       "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
+#endif                    // ENA_OPNCLS
 #if ENA_SCR_DIA
-    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},  //  "Text moves in/out in a diagonal
-                                            //  path up and left (North East)"
-    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
-                                            //  path up and right (North West)"
-    {PA_SCROLL_DOWN_LEFT,
-     "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
-                         //  left (South East)"
-    {PA_SCROLL_DOWN_RIGHT,
-     "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
-                           //  right (North West)"
-#endif                     // ENA_SCR_DIA
+      {PA_SCROLL_UP_LEFT,
+       "Scroll Up&Left"}, //  "Text moves in/out in a diagonal
+                          //  path up and left (North East)"
+      {PA_SCROLL_UP_RIGHT,
+       "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
+                          //  path up and right (North West)"
+      {PA_SCROLL_DOWN_LEFT,
+       "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
+                           //  left (South East)"
+      {PA_SCROLL_DOWN_RIGHT,
+       "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
+                             //  right (North West)"
+#endif                       // ENA_SCR_DIA
 #if ENA_GROW
-    {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
-                                //  from the top down"
-    {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
-                                // shrinks from the bottom up"}
-#endif                          // ENA_
+      {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
+                                  //  from the top down"
+      {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
+                                  // shrinks from the bottom up"}
+#endif                            // ENA_
   };
+
   String message = htmlHeader;
   message += "<H1>CineMatrix</H1>";
   bool advancedReq = false;
@@ -255,6 +263,10 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
   LOGDEBUG1("Creating index page while ",
             strcmp(myConfig->webPass, DEFAULTPASS));
   if (strcmp(myConfig->webPass, DEFAULTPASS)) {
+    requireAuthorization(true);
+    if (_authRequired && !  server->authenticate(request) ) {
+      return;
+     }
 
     message += "<div class=\"matrixform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
@@ -301,14 +313,14 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
       message += "\t</select>\n\n";
       message += "</div><!-- class=inputblock-->\n";
       message += "<div class=\"inputblock\" >\n";
-      message += "\t<label for=\"speed" + String(i) + "t\">Speed:</label>\n";
+      message += "\t<label for=\"speed" + String(i) + "\">Speed:</label>\n";
       message += "\t<input id=\"speed" + String(i) + "\" name=\"speed" +
                  String(i) + "\" style=\"width:4em;\"";
       message += " value=" + String(myConfig->element[i].speed) +
                  " type=\"number\" minlength=1 maxlength=4 >";
       message += "</div><!-- class=inputblock-->\n";
       message += "<div class=\"inputblock\" >\n";
-      message += "\t<label for=\"repeat" + String(i) + "t\">Repeat:</label>\n";
+      message += "\t<label for=\"repeat" + String(i) + "\">Repeat:</label>\n";
       message += "\t<input id=\"repeat" + String(i) + "\" name=\"repeat" +
                  String(i) + "\" style=\"width:3em;\"";
       message += " value=" + String(myConfig->element[i].repeat) +
@@ -325,9 +337,14 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
                "onclick=\"advancedButton()\">Advanced "
                "Configuration</button><script>function advancedButton() {  "
                "location.replace(\"/index.html?advanced\")}</script></div>";
+     message += "<div id=\"advancedbutton\"> <button "
+               "onclick=\"logout()\">Log "
+               "Out</button><script>function logout() {  "
+               "location.replace(\"/logout\")}</script></div>";
 
   } else {
-
+    // we really want authorization off when changing the default password.
+    requireAuthorization(false);
     message += "<div class=\"warning\"> You must change the WEB "
                "password!</div> <!-- div class=warning--> ";
 
@@ -374,7 +391,11 @@ void WebInterface::handleIndex(AsyncWebServerRequest *request) {
   request->send(200, "text/html", message);
 }
 
-void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
+void webInterface::handleSubmission(AsyncWebServerRequest *request) {
+    if (_authRequired && !  server->authenticate(request) ) {
+      LOGDEBUG1("Not Authenticated",request->url())
+      return;
+     }
 
   bool reconf = false;
   for (uint8_t i = 0; i < request->args(); i++) {
@@ -440,7 +461,7 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
   request->redirect("/");
 };
 
-void WebInterface::handleFile(AsyncWebServerRequest *request,
+void webInterface::handleFile(AsyncWebServerRequest *request,
                               const char *mimetype,
                               const unsigned char *compressedData,
                               const size_t compressedDataLen) {
@@ -451,27 +472,27 @@ void WebInterface::handleFile(AsyncWebServerRequest *request,
   request->send(response);
 }
 
-void WebInterface::setConfigPortalPages() {
+void webInterface::setConfigPortalPages() {
   LOGDEBUG0("SetConfigPortalPages");
   InitPages();
   server->on("/scan", HTTP_GET,
-             std::bind(&WebInterface::handleScan, this, std::placeholders::_1));
+             std::bind(&webInterface::handleScan, this, std::placeholders::_1));
 
   server->on("/", HTTP_GET,
-             std::bind(&WebInterface::handleCaptivePortal, this,
+             std::bind(&webInterface::handleCaptivePortal, this,
                        std::placeholders::_1));
   server->on("/configConfig", HTTP_GET,
-             std::bind(&WebInterface::handleConfigConfig, this,
+             std::bind(&webInterface::handleConfigConfig, this,
                        std::placeholders::_1));
   server->on(
       "/restart", HTTP_GET,
-      std::bind(&WebInterface::handleRestart, this, std::placeholders::_1));
+      std::bind(&webInterface::handleRestart, this, std::placeholders::_1));
   server->on("/networkSetup.html", HTTP_GET,
-             std::bind(&WebInterface::handleNetworkSetup, this,
+             std::bind(&webInterface::handleNetworkSetup, this,
                        std::placeholders::_1));
 
   server->on("/resetPassword.html", HTTP_GET,
-             std::bind(&WebInterface::handlePasswordReset, this,
+             std::bind(&webInterface::handlePasswordReset, this,
                        std::placeholders::_1));
 
   server->on("/exitconfig", HTTP_GET, [&](AsyncWebServerRequest *request) {
@@ -488,7 +509,7 @@ void WebInterface::setConfigPortalPages() {
   return;
 }
 
-void WebInterface::handleScan(AsyncWebServerRequest *request) {
+void webInterface::handleScan(AsyncWebServerRequest *request) {
   LOGDEBUG0("Scan Handle");
   String json = "[";
   int n = WiFi.scanComplete();
@@ -518,18 +539,20 @@ void WebInterface::handleScan(AsyncWebServerRequest *request) {
   json = String();
 };
 
-void WebInterface::handleLogout(AsyncWebServerRequest *request) {
+void webInterface::handleLogout(AsyncWebServerRequest *request) {
   Serial.println("Disconnection");
   AsyncWebServerResponse *response =
       request->beginResponse(301); // Sends 301 redirect
   response->addHeader("Location", "/WebLogin.html?msg=User disconnected");
   response->addHeader("Cache-Control", "no-cache");
-  response->addHeader("Set-Coo kie", (String)COOKIENAME + "=0");
+
+  
+  response->addHeader("Set-Cookie", (String)COOKIENAME + "=0 ;expires=Thu, 01 Jan 1970 00:00:00 GMT;");
   request->send(response);
   return;
 }
 
-void WebInterface::handleLogin(AsyncWebServerRequest *request) {
+void webInterface::handleLogin(AsyncWebServerRequest *request) {
   LOGINFO("Handle login");
   String msg;
   if (request->hasHeader("Cookie")) {
@@ -538,8 +561,8 @@ void WebInterface::handleLogin(AsyncWebServerRequest *request) {
     LOGINFO1("Found cookie: ", cookie);
   }
   if (request->hasArg("password")) {
-    LOGINFO("Found parameter: ");
-    if (request->arg("password") == String(_password)) {
+    LOGINFO0("Found parameter: ");
+    if (request->arg("password") == String(myConfig->webPass)) {
       AsyncWebServerResponse *response =
           request->beginResponse(301); // Sends 301 redirect
 
@@ -583,13 +606,13 @@ bool contains(vector<T> vec, const T &elem) {
   return result;
 }
 
-unsigned long WebInterface::remainingPortaltime() {
+unsigned long webInterface::remainingPortaltime() {
   return (std::max(
       (unsigned long)0,
       (_configPortalInterfaceStart + CONFIGPORTAL_TIMEOUT - millis()) / 1000));
 }
 
-void WebInterface::handleConfigConfig(AsyncWebServerRequest *request) {
+void webInterface::handleConfigConfig(AsyncWebServerRequest *request) {
   vector<String> wifinets;
 
   String json = "{";
@@ -621,7 +644,7 @@ void WebInterface::handleConfigConfig(AsyncWebServerRequest *request) {
   json = String();
 }
 
-void WebInterface::handleNetworkSetup(
+void webInterface::handleNetworkSetup(
     AsyncWebServerRequest *request) { // only used as config portal
   LOGINFO0("Blocking for finalizing input");
   _waitingForClientAction = true;
@@ -634,7 +657,7 @@ void WebInterface::handleNetworkSetup(
   return;
 }
 
-void WebInterface::handleCaptivePortal(AsyncWebServerRequest *request) {
+void webInterface::handleCaptivePortal(AsyncWebServerRequest *request) {
   LOGINFO0("CaptivePortal Hit")
 
   if (captivePortal(request)) {
@@ -658,7 +681,7 @@ void WebInterface::handleCaptivePortal(AsyncWebServerRequest *request) {
    Return true in that case so the page handler do not try to handle the
    request again.
 */
-bool WebInterface::captivePortal(AsyncWebServerRequest *request) {
+bool webInterface::captivePortal(AsyncWebServerRequest *request) {
 
   if (!isIp(request->host())) {
     LOGINFO1(F("Incomming request"), request->url());
@@ -681,7 +704,7 @@ bool WebInterface::captivePortal(AsyncWebServerRequest *request) {
   return false;
 }
 
-void WebInterface::handleRestart(AsyncWebServerRequest *request) {
+void webInterface::handleRestart(AsyncWebServerRequest *request) {
   String message =
       "<head><meta http-equiv=\"refresh\" content=\"2;url=/\">\n<meta "
       "name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
@@ -693,7 +716,7 @@ void WebInterface::handleRestart(AsyncWebServerRequest *request) {
 }
 
 // Is this an IP?
-bool WebInterface::isIp(const String &str) {
+bool webInterface::isIp(const String &str) {
   for (unsigned int i = 0; i < str.length(); i++) {
     int c = str.charAt(i);
 
@@ -703,4 +726,18 @@ bool WebInterface::isIp(const String &str) {
   }
 
   return true;
+}
+
+void webInterface::requireAuthorization(bool require) {
+  _authRequired = require;
+  return;
+}
+
+bool webInterface::authorize(AsyncWebServerRequest *request) {
+  if (!server->is_authenticated(request) && _authRequired) {
+    LOGINFO0("Not authenticated")
+    return false;
+  } else {
+    return true;
+  }
 }

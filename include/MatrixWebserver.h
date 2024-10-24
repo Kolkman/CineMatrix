@@ -19,7 +19,7 @@ public:
     void setPassword(const char *);
 
 
-    void authenticate(AsyncWebServerRequest *);
+    bool authenticate(AsyncWebServerRequest *);
 
     char *getPassword();
     bool is_authenticated(AsyncWebServerRequest *);

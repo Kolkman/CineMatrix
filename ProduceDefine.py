@@ -41,7 +41,7 @@ finally:
 print("#ifndef WEB"+_name+"_H")
 print("#define WEB"+_name+"_H")
 print()
-# server->on("/FILENAME.svg", HTTP_GET, std::bind(&WebInterface::handleFileName, this, std::placeholders::_1));
+# server->on("/FILENAME.svg", HTTP_GET, std::bind(&webInterface::handleFileName, this, std::placeholders::_1));
 #
 _compr = gzip.compress(bytes(_data, 'utf-8'))
 
@@ -52,7 +52,7 @@ print("unsigned int "+_name+"_len = ", len(_compr), ";")
 
 print("\n\n")
 print("#define DEF_HANDLE_"+_name + "  server->on(\"/"+filename, end='')
-print("\", HTTP_GET, std::bind (&WebInterface::handleFile, this, std::placeholders::_1", end='')
+print("\", HTTP_GET, std::bind (&webInterface::handleFile, this, std::placeholders::_1", end='')
 print(",\"" + sys.argv[2]+"\","+_name+","+_name+"_len));")
 
 

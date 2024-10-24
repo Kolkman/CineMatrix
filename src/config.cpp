@@ -51,7 +51,7 @@ void MatrixConfig::setDefaults() {
   strncpy(element[2].text, DEFAULTLINE2, TEXTLENGTH);
   strncpy(element[0].field, DEFAULTFIELD0, FIELDVALUELENGTH);
   strncpy(element[1].field, DEFAULTFIELD1, FIELDVALUELENGTH);
-  strncpy(element[2].field, DEFAULTFIELD1, FIELDVALUELENGTH);
+  strncpy(element[2].field, DEFAULTFIELD2, FIELDVALUELENGTH);
   strncpy(element[0].value, DEFAULTVALUE0, FIELDVALUELENGTH);
   strncpy(element[1].value, DEFAULTVALUE1, FIELDVALUELENGTH);
   strncpy(element[2].value, DEFAULTVALUE2, FIELDVALUELENGTH);
@@ -60,6 +60,9 @@ void MatrixConfig::setDefaults() {
     strncpy(element[i].text, "", TEXTLENGTH);
     strncpy(element[i].field, "", FIELDVALUELENGTH);
     strncpy(element[i].value, "", FIELDVALUELENGTH);
+  }
+  for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+    createtMatrixText(&element[i]);
   }
 }
 
@@ -157,6 +160,8 @@ bool MatrixConfig::loadConfig() {
           strncpy(element[cntr].value, el["value"].as<const char *>(),
                   FIELDVALUELENGTH);
         }
+        /// Here we  do a bunch magic to create the actual displayd text
+        createtMatrixText(&element[cntr]);
       }
       cntr++;
     }
@@ -232,4 +237,16 @@ String MatrixConfig::passForSSID(String _SSID) {
     };
   }
   return (pass);
+}
+
+
+
+
+void MatrixConfig::createtMatrixText(textelements *el) {
+  String MatrixString=String(el->text);
+
+  for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+     MatrixString.replace("[[" + String(element[i].field) + "]]", element[i].value);
+  }
+  strncpy(el->matrixtext,MatrixString.c_str(),MATRIXTEXTLENGTH);
 }
