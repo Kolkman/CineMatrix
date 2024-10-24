@@ -1,20 +1,15 @@
 #include "config.h"
 #include "debug.h"
+#include "defaults.h"
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 #include <StreamUtils.h>
 
 MatrixConfig::MatrixConfig() {
   LOGDEBUG0("MatrixConfig constructor")
-  strncpy(webPass, DEFAULTPASS,WEBPASS_BUFF_SIZE);
+  strncpy(webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
 
-  for (int i = 0; i < MAXTEXTELEMENTS; i++) {
-    strcpy(element[i].text, "");
-    element[i].effect = PA_SCROLL_LEFT;
-    element[i].position = PA_RIGHT;
-    element[i].speed = DEFAULT_SPEED;
-    element[i].repeat = 1;
-  }
+  setDefaults();
 
   for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
     *WM_config.WiFi_Creds[i].wifi_ssid = '\0';
@@ -23,13 +18,6 @@ MatrixConfig::MatrixConfig() {
   WM_AP_IPconfig._ap_static_ip = {192, 168, 100, 1};
   WM_AP_IPconfig._ap_static_gw = {192, 168, 100, 1};
   WM_AP_IPconfig._ap_static_sn = {255, 255, 255, 0};
-
-  // Default
-  strcpy(element[0].text, "");
-  // strcat(element[0].text, WIFI_SSID);
-  strcpy(element[1].text, "");
-
-  strcpy(element[2].text, "");
 
   LOGINFO(element[0].text);
 }
@@ -47,6 +35,31 @@ bool MatrixConfig::prepareFS() {
     }
   } else { // Initial mount success
     return true;
+  }
+}
+
+void MatrixConfig::setDefaults() {
+  for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+    strcpy(element[i].text, "");
+    element[i].effect = PA_SCROLL_LEFT;
+    element[i].position = PA_RIGHT;
+    element[i].speed = DEFAULT_SPEED;
+    element[i].repeat = 1;
+  }
+  strncpy(element[0].text, DEFAULTLINE0, TEXTLENGTH);
+  strncpy(element[1].text, DEFAULTLINE1, TEXTLENGTH);
+  strncpy(element[2].text, DEFAULTLINE2, TEXTLENGTH);
+  strncpy(element[0].field, DEFAULTFIELD0, FIELDVALUELENGTH);
+  strncpy(element[1].field, DEFAULTFIELD1, FIELDVALUELENGTH);
+  strncpy(element[2].field, DEFAULTFIELD1, FIELDVALUELENGTH);
+  strncpy(element[0].value, DEFAULTVALUE0, FIELDVALUELENGTH);
+  strncpy(element[1].value, DEFAULTVALUE1, FIELDVALUELENGTH);
+  strncpy(element[2].value, DEFAULTVALUE2, FIELDVALUELENGTH);
+
+  for (int i = 3; i < MAXTEXTELEMENTS; i++) {
+    strncpy(element[i].text, "", TEXTLENGTH);
+    strncpy(element[i].field, "", FIELDVALUELENGTH);
+    strncpy(element[i].value, "", FIELDVALUELENGTH);
   }
 }
 
@@ -116,11 +129,11 @@ bool MatrixConfig::loadConfig() {
     }
   }
   if (jsonDocument["webpass"])
-   strncpy(webPass,   jsonDocument["webpass"],WEBPASS_BUFF_SIZE);
-    
-  if (!strcmp(webPass,DEFAULTPASS)) // Comparing variable to define
+    strncpy(webPass, jsonDocument["webpass"], WEBPASS_BUFF_SIZE);
+
+  if (!strcmp(webPass, DEFAULTPASS)) // Comparing variable to define
   {
-    LOGINFO1("Web Password not set",webPass)
+    LOGINFO1("Web Password not set", webPass)
 
     // Only use texts if the default password is not set.
     int cntr = 0;
@@ -132,7 +145,18 @@ bool MatrixConfig::loadConfig() {
         element[cntr].position = (textPosition_t)el["position"].as<int>();
         element[cntr].repeat = el["repeat"].as<int>();
         element[cntr].speed = el["speed"].as<int>();
-        strncpy(element[cntr].text, el["text"].as<const char *>(), TEXTLENGTH);
+        if (el["text"]) {
+          strncpy(element[cntr].text, el["text"].as<const char *>(),
+                  TEXTLENGTH);
+        }
+        if (el["field"]) {
+          strncpy(element[cntr].field, el["field"].as<const char *>(),
+                  FIELDVALUELENGTH);
+        }
+        if (el["value"]) {
+          strncpy(element[cntr].value, el["value"].as<const char *>(),
+                  FIELDVALUELENGTH);
+        }
       }
       cntr++;
     }
@@ -152,6 +176,8 @@ bool MatrixConfig::saveConfig() {
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {
     JsonObject elmnt = elements.createNestedObject();
     elmnt["text"] = element[i].text;
+    elmnt["field"] = element[i].field;
+    elmnt["value"] = element[i].value;
     elmnt["effect"] = element[i].effect;
     elmnt["position"] = element[i].position;
     elmnt["speed"] = element[i].speed;

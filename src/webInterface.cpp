@@ -1,6 +1,7 @@
 #include "webInterface.h"
 #include "config.h"
 #include "debug.h"
+#include "pgmspace.h"
 #include "sha1.h"
 #include "webInterfaceAPI.h"
 #include <Arduino.h>
@@ -49,6 +50,8 @@ void WebInterface::setupWebSrv(WiFiManager *wifiMngr) {
         ->loopPortal(); /// Wait the configuration to be finished or timed out.
   }
 
+
+  myConfig->loadConfig(); // To make sure we are in sync
   wifiMngr->connectMultiWiFi(myConfig);
   LOGDEBUG0("Resetting the Webserver");
   server->reset();
@@ -157,7 +160,7 @@ void WebInterface::handleReset(AsyncWebServerRequest *request) {
 void WebInterface::handlePasswordReset(AsyncWebServerRequest *request) {
   strncpy(myConfig->webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
   myConfig->saveConfig();
-  request->redirect("/index.html");
+  request->redirect("/");
 }
 
 void WebInterface::handleRoot(AsyncWebServerRequest *request) {
@@ -385,8 +388,16 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
           if (!p->value().equals(myConfig->webPass)) {
             strncpy(myConfig->webPass, p->value().c_str(), WEBPASS_BUFF_SIZE);
             LOGINFO1("Changing web password to:", (myConfig->webPass));
-            if (strcmp(myConfig->webPass, DEFAULTPASS))
-              reconf = true;
+            if (strcmp(myConfig->webPass, DEFAULTPASS)) {
+              strncpy(myConfig->element[0].text, DEFAULTLINE0, TEXTLENGTH);
+              strncpy(myConfig->element[1].text, DEFAULTLINE1, TEXTLENGTH);
+              strncpy(myConfig->element[2].text, DEFAULTLINE2, TEXTLENGTH);
+
+              for (int i = 3; i < MAXTEXTELEMENTS; i++) {
+                strncpy(myConfig->element[i].text, "", TEXTLENGTH);
+              }
+            }
+            reconf = true;
           }
         }
       }
@@ -422,8 +433,10 @@ void WebInterface::handleSubmission(AsyncWebServerRequest *request) {
     }
   }
 
-  if (reconf)
+  if (reconf) {
+    LOGDEBUG("Saving CONFIG")
     myConfig->saveConfig();
+  }
   request->redirect("/");
 };
 

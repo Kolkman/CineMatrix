@@ -9,14 +9,14 @@
 #ifndef DEFAULT_SPEED
 #define DEFAULT_SPEED 75
 #endif
-# define DEFAULTPASS "CineMatrix"
+# define DEFAULTPASS "1b3e6984034bb"
 
 #define WEBPASS_BUFF_SIZE 32
 
 #define COOKIENAME "CineMatrix_ID"
 
 
-
+#define FIELDVALUELENGTH 32
 
 #include "wifiManager.h"
 #include <MD_Parola.h>
@@ -25,6 +25,8 @@ typedef struct
 // Eenumps from
 {
   char text[TEXTLENGTH + 1];
+  char field[FIELDVALUELENGTH+1];
+  char value[FIELDVALUELENGTH+1];
   // Enumerations
   textEffect_t effect;
   textPosition_t position;
@@ -39,10 +41,11 @@ public:
   String passForSSID(String);
   char webPass[WEBPASS_BUFF_SIZE+1];
   bool prepareFS();
+  void setDefaults();
   bool loadConfig();  // load current config to disk (limited set of vallues)
   bool saveConfig();  // save current config to disk (limited set of vallues)
   void resetConfig(); // resetConfig to values that were programmed by default
-  textelements element[MAXTEXTELEMENTS];
+  textelements element[MAXTEXTELEMENTS+1];
 
   WiFi_AP_IPConfig WM_AP_IPconfig; // WifiManager Configuration
   WiFi_STA_IPConfig WM_STA_IPconfig;
