@@ -6,6 +6,8 @@
 #include "debug.h"
 #include "pages/configDone.html.h"
 #include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
+
 webInterfaceAPI webAPI;
 
 webInterfaceAPI::webInterfaceAPI() {
@@ -29,6 +31,13 @@ void webInterfaceAPI::begin(MatrixWebServer *s, MatrixConfig *conf) {
       std::bind(&webInterfaceAPI::handleSet, this, std::placeholders::_1));
   server->on("/api/v1/config", HTTP_GET,
              std::bind(&webInterfaceAPI::handleConfigFile, this,
+                       std::placeholders::_1));
+
+  server->on("/api/v1/resetPassword", HTTP_GET,
+             std::bind(&webInterfaceAPI::handlePasswordReset, this,
+                       std::placeholders::_1));
+  server->on("/api/v1/resetConfig", HTTP_GET,
+             std::bind(&webInterfaceAPI::handleConfigReset, this,
                        std::placeholders::_1));
 }
 
@@ -58,8 +67,7 @@ void webInterfaceAPI::handleSet(AsyncWebServerRequest *request) {
                       // combinations
   if (!server->is_authenticated(request) && _authRequired) {
     LOGINFO0("API not authenticed")
-    strcpy(message, "{\"authenticated\": false}");
-    request->send(200, "application/json", message);
+
     return;
   }
 
@@ -193,4 +201,36 @@ void webInterfaceAPI::handleIsAuthenticated(AsyncWebServerRequest *request) {
 void webInterfaceAPI::requireAuthorization(bool require) {
   _authRequired = require;
   return;
+}
+
+
+void webInterfaceAPI::handlePasswordReset(AsyncWebServerRequest *request) {
+if (_authRequired && !  server->authenticate(request) ) {
+    LOGINFO0("API not authenticed")
+
+    return;
+  }
+
+  strncpy(myConfig->webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
+  myConfig->saveConfig();
+  request->redirect("/");
+}
+
+
+void webInterfaceAPI::handleConfigReset(AsyncWebServerRequest *request) {
+if (_authRequired && !  server->authenticate(request) ) {
+    LOGINFO0("API not authenticed")
+
+    return;
+  }
+
+  LittleFS.remove("./config.json");
+   String message =
+      "<head><meta http-equiv=\"refresh\" content=\"2;url=/\">\n<meta "
+      "name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
+      "/><title>CineMatrix</title></head>";
+  message += "<h1> Reseting Device ! </h1>";
+  request->send(200, "text/html", message);
+  ESP.restart();
+
 }

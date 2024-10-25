@@ -56,7 +56,8 @@ void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
   wifiMngr->connectMultiWiFi(myConfig);
   LOGDEBUG0("Resetting the Webserver");
   server->reset();
-
+  // closing the API for unauthorized
+  webAPI.requireAuthorization(true);
   //  setupWebSrv(wifiMngr);
   LOGDEBUG0("Starting the Webserver");
   server->begin(); /// Webserver is now running....
@@ -158,12 +159,6 @@ void webInterface::handleReset(AsyncWebServerRequest *request) {
   ESP.restart();
 }
 
-void webInterface::handlePasswordReset(AsyncWebServerRequest *request) {
-  strncpy(myConfig->webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
-  myConfig->saveConfig();
-  request->redirect("/");
-}
-
 void webInterface::handleRoot(AsyncWebServerRequest *request) {
   request->redirect("/index.html");
 }
@@ -252,24 +247,40 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
 #endif                            // ENA_
   };
 
-  String message = htmlHeader;
-  message += "<H1>CineMatrix</H1>";
   bool advancedReq = false;
   for (uint8_t i = 0; i < request->args(); i++) {
     if (request->argName(i) == "advanced")
       advancedReq = true;
   }
 
-  LOGDEBUG1("Creating index page while ",
-            strcmp(myConfig->webPass, DEFAULTPASS));
+  String message = htmlHeader;
+  message += "<H1>CineMatrix</H1>";
+
   if (strcmp(myConfig->webPass, DEFAULTPASS)) {
+    LOGDEBUG0("Loading index.html while password is not the default")
+
     requireAuthorization(true);
-    if (_authRequired && !  server->authenticate(request) ) {
+
+    if (_authRequired && !server->authenticate(request)) {
       return;
-     }
+    }
 
     message += "<div class=\"matrixform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
+
+    for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+      if (strcmp(myConfig->element[i].field, "")) {
+        message += "<div class=\"valueentryblock\" >\n";
+        message += "\t<div class=\"valueentry\"> <label for=\"valueentry" +
+                   String(i) + "\">" + String(myConfig->element[i].field) +
+                   ":</label>\n";
+        message += "\t<textarea class=\"valueentry\" id=\"valueentry" + String(i) +
+                   "\" name=\"valueentry" + String(i) + "\"";
+        message += " maxlength=" + String(FIELDVALUELENGTH) + ">";
+        message += String(myConfig->element[i].value) + "</textarea></div>\n";
+        message += "</div>\n";
+      }
+    }
 
     for (int i = 0; i < MAXTEXTELEMENTS; i++) {
       message += "<div class=\"matrixentry\" >\n";
@@ -337,7 +348,7 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
                "onclick=\"advancedButton()\">Advanced "
                "Configuration</button><script>function advancedButton() {  "
                "location.replace(\"/index.html?advanced\")}</script></div>";
-     message += "<div id=\"advancedbutton\"> <button "
+    message += "<div id=\"advancedbutton\"> <button "
                "onclick=\"logout()\">Log "
                "Out</button><script>function logout() {  "
                "location.replace(\"/logout\")}</script></div>";
@@ -392,10 +403,10 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
 }
 
 void webInterface::handleSubmission(AsyncWebServerRequest *request) {
-    if (_authRequired && !  server->authenticate(request) ) {
-      LOGDEBUG1("Not Authenticated",request->url())
-      return;
-     }
+  if (_authRequired && !server->authenticate(request)) {
+    LOGDEBUG1("Not Authenticated", request->url())
+    return;
+  }
 
   bool reconf = false;
   for (uint8_t i = 0; i < request->args(); i++) {
@@ -491,10 +502,6 @@ void webInterface::setConfigPortalPages() {
              std::bind(&webInterface::handleNetworkSetup, this,
                        std::placeholders::_1));
 
-  server->on("/resetPassword.html", HTTP_GET,
-             std::bind(&webInterface::handlePasswordReset, this,
-                       std::placeholders::_1));
-
   server->on("/exitconfig", HTTP_GET, [&](AsyncWebServerRequest *request) {
     _waitingForClientAction = false;
     request->redirect("/");
@@ -546,8 +553,9 @@ void webInterface::handleLogout(AsyncWebServerRequest *request) {
   response->addHeader("Location", "/WebLogin.html?msg=User disconnected");
   response->addHeader("Cache-Control", "no-cache");
 
-  
-  response->addHeader("Set-Cookie", (String)COOKIENAME + "=0 ;expires=Thu, 01 Jan 1970 00:00:00 GMT;");
+  response->addHeader("Set-Cookie",
+                      (String)COOKIENAME +
+                          "=0 ;expires=Thu, 01 Jan 1970 00:00:00 GMT;");
   request->send(response);
   return;
 }
@@ -731,13 +739,4 @@ bool webInterface::isIp(const String &str) {
 void webInterface::requireAuthorization(bool require) {
   _authRequired = require;
   return;
-}
-
-bool webInterface::authorize(AsyncWebServerRequest *request) {
-  if (!server->is_authenticated(request) && _authRequired) {
-    LOGINFO0("Not authenticated")
-    return false;
-  } else {
-    return true;
-  }
 }

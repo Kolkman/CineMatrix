@@ -38,13 +38,12 @@ private:
   String _password;
   bool _authRequired = false;
 
-  bool authorize(AsyncWebServerRequest *);
   // HTTPUpdateServer *httpUpdater;
   void handleNotFound(AsyncWebServerRequest *);
   void handleIndex(AsyncWebServerRequest *);
   void handleRoot(AsyncWebServerRequest *);
   void handleReset(AsyncWebServerRequest *);
-  void handlePasswordReset(AsyncWebServerRequest *);
+
   void handleSubmission(AsyncWebServerRequest *);
   void handleFile(AsyncWebServerRequest *, const char *, const unsigned char *,
                   const size_t);
