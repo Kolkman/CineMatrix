@@ -243,6 +243,10 @@ String MatrixConfig::passForSSID(String _SSID) {
 
 
 void MatrixConfig::createtMatrixText(textelements *el) {
+  if (!strcmp(el->text,"")){
+    strcpy(el->matrixtext,"");
+    return;
+  }
   String MatrixString=String(el->text);
 
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {

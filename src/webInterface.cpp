@@ -306,7 +306,7 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
         message += "/>";
 
         message += "</div>\n";
-           message += "</div>\n";
+        message += "</div>\n";
       }
       message += "</div>";
 
@@ -383,6 +383,7 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
     message += " <div class=\"submitbutton\"> <input type=\"submit\" "
                "value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
+
     if (advancedReq) {
 
       message += "<div class=\"scriptbutton\" id=\"backbutton\"> <button "
@@ -441,10 +442,25 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
         "onclick=\"updateButton()\">Update</button><script>function "
         "updateButton() {  location.replace(\"/update\")}</script></div>";
 
+    message += "<div class=\"scriptbutton\"id=\"advancedbutton\"> <button "
+               "onclick=\"indexButton()\">Back</button><script>function "
+               "indexButton() "
+               "{  location.replace(\"/index.html\")}</script></div>";
+  }
+
+  if (!advancedReq) { // display preview of the matrix text
     message +=
-        "<div class=\"scriptbutton\"id=\"advancedbutton\"> <button "
-        "onclick=\"indexButton()\">Back</button><script>function indexButton() "
-        "{  location.replace(\"/index.html\")}</script></div>";
+        "<div class=\"sixtyfour-convergence-matrixrss\" id=\"matrixpreview\">";
+    for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+      if (strcmp(myConfig->element[i].matrixtext, "")) {
+
+        message += "<div class=\"matrixpreviewline\">";
+        message += String(myConfig->element[i].matrixtext);
+        message += "</div>";
+      }
+    }
+
+    message += "</div>";
   }
 
   message +=
