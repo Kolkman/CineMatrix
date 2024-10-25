@@ -169,82 +169,77 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
   struct PositionStruct_t PositionEntry[] = {
       {PA_LEFT, "LEFT"}, {PA_CENTER, "CENTER"}, {PA_RIGHT, "RIGHT"}};
   struct EffectStruct_t EffectEntry[] = {
-      {PA_NO_EFFECT,
-       "No Effect"},       // "Used as a place filler executes no operation"
-      {PA_PRINT, "Print"}, //  "Text just appears (printed)"
-      {PA_SCROLL_UP, "Scroll Up"}, //  "Text scrolls up through the display"
-      {PA_SCROLL_DOWN,
-       "Scroll Down"}, //  "Text scrolls down through the display"
-      {PA_SCROLL_LEFT,
-       "Scroll Left"}, //  "Text scrolls right to left on the display"
-      {PA_SCROLL_RIGHT,
-       "Scroll Right"}, //  "Text scrolls left to right on the display"
+    {PA_NO_EFFECT,
+     "No Effect"},       // "Used as a place filler executes no operation"
+    {PA_PRINT, "Print"}, //  "Text just appears (printed)"
+    {PA_SCROLL_UP, "Scroll Up"},     //  "Text scrolls up through the display"
+    {PA_SCROLL_DOWN, "Scroll Down"}, //  "Text scrolls down through the display"
+    {PA_SCROLL_LEFT,
+     "Scroll Left"}, //  "Text scrolls right to left on the display"
+    {PA_SCROLL_RIGHT,
+     "Scroll Right"}, //  "Text scrolls left to right on the display"
 #if ENA_SPRITE
-      {PA_SPRITE,
-       "Movie"}, //  "Text enters and exits using user defined sprite"
+    {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-      {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
-                           //  from the right"
-      {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
-                           //  alternate direction (U/D)"
-      {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
-                           //  intensity setting"
-      {PA_DISSOLVE,
-       "Dissolve"},          //  "Text dissolves from one display to another"
-      {PA_BLINDS, "Blinds"}, //  "Text is replaced behind vertical blinds"
-      {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
-#endif                            // ENA_MISC
+    {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
+                         //  from the right"
+    {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
+                         //  alternate direction (U/D)"
+    {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
+                         //  intensity setting"
+    {PA_DISSOLVE, "Dissolve"},  //  "Text dissolves from one display to another"
+    {PA_BLINDS, "Blinds"},      //  "Text is replaced behind vertical blinds"
+    {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
+#endif                          // ENA_MISC
 #if ENA_WIPE
-      {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
-                         // like it is wiped on and off"
-      {PA_WIPE_CURSOR,
-       "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
-#endif                 // ENA_WIPES
+    {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
+                       // like it is wiped on and off"
+    {PA_WIPE_CURSOR,
+     "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
+#endif               // ENA_WIPES
 #if ENA_SCAN
-      {PA_SCAN_HORIZ,
-       "Scan Horizontal led"}, //  "Scan the LED column one at a time then
-                               //  appears/disappear at end"
-      {PA_SCAN_HORIZX,
-       "Scan Horizontal blank"}, //  "Scan a blank column through the text one
-                                 //  column at a time then appears/disappear at
-                                 //  end"
-      {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
-                                           //  then appears/disappear at end"
-      {PA_SCAN_VERTX,
-       "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
-                               //  a time then appears/disappear at end"
-#endif                         // ENA_SCAN
+    {PA_SCAN_HORIZ,
+     "Scan Horizontal led"}, //  "Scan the LED column one at a time then
+                             //  appears/disappear at end"
+    {PA_SCAN_HORIZX,
+     "Scan Horizontal blank"}, //  "Scan a blank column through the text one
+                               //  column at a time then appears/disappear at
+                               //  end"
+    {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
+                                         //  then appears/disappear at end"
+    {PA_SCAN_VERTX,
+     "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
+                             //  a time then appears/disappear at end"
+#endif                       // ENA_SCAN
 #if ENA_OPNCLS
-      {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
-                               // display},  towards the ends"
-      {PA_OPENING_CURSOR,
-       "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
-      {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
-                               // display}, towards the middle"
-      {PA_CLOSING_CURSOR,
-       "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
-#endif                    // ENA_OPNCLS
+    {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
+                             // display},  towards the ends"
+    {PA_OPENING_CURSOR,
+     "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
+    {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
+                             // display}, towards the middle"
+    {PA_CLOSING_CURSOR,
+     "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
+#endif                  // ENA_OPNCLS
 #if ENA_SCR_DIA
-      {PA_SCROLL_UP_LEFT,
-       "Scroll Up&Left"}, //  "Text moves in/out in a diagonal
-                          //  path up and left (North East)"
-      {PA_SCROLL_UP_RIGHT,
-       "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
-                          //  path up and right (North West)"
-      {PA_SCROLL_DOWN_LEFT,
-       "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
-                           //  left (South East)"
-      {PA_SCROLL_DOWN_RIGHT,
-       "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
-                             //  right (North West)"
-#endif                       // ENA_SCR_DIA
+    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},  //  "Text moves in/out in a diagonal
+                                            //  path up and left (North East)"
+    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
+                                            //  path up and right (North West)"
+    {PA_SCROLL_DOWN_LEFT,
+     "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
+                         //  left (South East)"
+    {PA_SCROLL_DOWN_RIGHT,
+     "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
+                           //  right (North West)"
+#endif                     // ENA_SCR_DIA
 #if ENA_GROW
-      {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
-                                  //  from the top down"
-      {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
-                                  // shrinks from the bottom up"}
-#endif                            // ENA_
+    {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
+                                //  from the top down"
+    {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
+                                // shrinks from the bottom up"}
+#endif                          // ENA_
   };
 
   bool advancedReq = false;
@@ -267,88 +262,139 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
 
     message += "<div class=\"matrixform\"> \n";
     message += "<form action=\"/submit.html\"> \n";
+    if (!advancedReq) {
+      for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+        if (strcmp(myConfig->element[i].field, "")) {
+          message += "<div class=\"valueentryblock\" >\n";
+          message += "\t<div class=\"valueentry\"> <label for=\"valueentry" +
+                     String(i) + "\">" + String(myConfig->element[i].field) +
+                     ":</label>\n";
+          message +=
+              "\t<input class=\"valueentry\" type=\"text\" id=\"valueentry" +
+              String(i) + "\" name=\"valueentry" + String(i) + "\"";
+          message += " maxlength=" + String(FIELDVALUELENGTH);
+          message += " value=\"" + String(myConfig->element[i].value) + "\"";
 
-    for (int i = 0; i < MAXTEXTELEMENTS; i++) {
-      if (strcmp(myConfig->element[i].field, "")) {
-        message += "<div class=\"valueentryblock\" >\n";
-        message += "\t<div class=\"valueentry\"> <label for=\"valueentry" +
-                   String(i) + "\">" + String(myConfig->element[i].field) +
-                   ":</label>\n";
-        message += "\t<textarea class=\"valueentry\" id=\"valueentry" + String(i) +
-                   "\" name=\"valueentry" + String(i) + "\"";
-        message += " maxlength=" + String(FIELDVALUELENGTH) + ">";
-        message += String(myConfig->element[i].value) + "</textarea></div>\n";
+          message += "/>";
+          message += "</div>\n";
+          message += "</div>\n";
+        }
+      }
+    } else {
+      message += "<div class=\"fieldform\">";
+      message +=
+          "<div class=\"fieldformheader\">Provide individual fieldnames</div>";
+      message += "<div class=\"fieldformexplanation\">These are the names of "
+                 "the fields that can be used in the texts below and for which "
+                 "you can enter values on the home page.</div>";
+      for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+        message += "<div class=\"fieldentryblock\" >\n";
+        message += "\t<div class=\"fieldentry\"> <label for=\"fieldentry" +
+                   String(i) + "\"> Field " + String(i) + ":</label>\n";
+        message += "\t<input class=\"fieldentry\" id=\"fieldentry" + String(i) +
+                   "\" name=\"fieldentry" + String(i) + "\"";
+        message += " maxlength=" + String(FIELDVALUELENGTH);
+        message += " value=\"" + String(myConfig->element[i].field) + "\"";
+
+        message += "/>";
+
+        message += "</div>\n";
+           message += "</div>\n";
+      }
+      message += "</div>";
+
+      message += "<div class=\"matrixentryform\">";
+      message += "<div class=\"matrixentryformheader\">Provide individual "
+                 "texts</div>";
+      message += "<div class=\"matrixentryexplanation\">"
+                 "These are the texts that appear on the Matrix display. Use a "
+                 "fieldname between a set of two square brackets, "
+                 "[[likeThis]], so that the vallue that you have entered on "
+                 "the first page will be substituted."
+                 "</div>";
+      for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+        message += "<div class=\"matrixentry\" >\n";
+        message += "\t<div class=\"textentry\"> <label for=\"textentry" +
+                   String(i) + "\">Text:</label>\n";
+        message += "\t<textarea id=\"textentry" + String(i) +
+                   "\" name=\"textentry" + String(i) + "\"";
+        message += " maxlength=" + String(TEXTLENGTH) + ">";
+        message += String(myConfig->element[i].text) + "</textarea></div>\n";
+
+        message += "<div class=\"inputblock\" >\n";
+        message +=
+            "\t\t<label for=\"effects" + String(i) + "\"> Effect: </label>\n";
+        message += "\t\t<select name=\"effect" + String(i) + "\" id=\"effects" +
+                   String(i) + "\">\n";
+
+        for (EffectStruct_t e : EffectEntry) {
+          message += "\t\t\t<option value=" + String(e.effect);
+          if (e.effect == myConfig->element[i].effect) {
+            message += " selected";
+          }
+
+          message += " >" + e.label + "</option>\n";
+        }
+        message += "\t</select>\n";
+        message += "</div><!-- class=inputblock-->\n";
+        message += "<div class=\"inputblock\" >\n";
+        message += "\t\t<label for=\"positions" + String(i) +
+                   "\"> Position: </label>\n";
+        message += "\t\t<select name=\"position" + String(i) +
+                   "\" id=\"positions" + String(i) + "\">\n";
+
+        for (PositionStruct_t p : PositionEntry) {
+          message += "\t\t\t<option value=" + String(p.position);
+          if (p.position == myConfig->element[i].position) {
+            message += " selected";
+          }
+
+          message += +" >" + p.label + "</option>\n";
+        }
+        message += "\t</select>\n\n";
+        message += "</div><!-- class=inputblock-->\n";
+        message += "<div class=\"inputblock\" >\n";
+        message += "\t<label for=\"speed" + String(i) + "\">Speed:</label>\n";
+        message += "\t<input id=\"speed" + String(i) + "\" name=\"speed" +
+                   String(i) + "\" style=\"width:4em;\"";
+        message += " value=" + String(myConfig->element[i].speed) +
+                   " type=\"number\" minlength=1 maxlength=4 >";
+        message += "</div><!-- class=inputblock-->\n";
+        message += "<div class=\"inputblock\" >\n";
+        message += "\t<label for=\"repeat" + String(i) + "\">Repeat:</label>\n";
+        message += "\t<input id=\"repeat" + String(i) + "\" name=\"repeat" +
+                   String(i) + "\" style=\"width:3em;\"";
+        message += " value=" + String(myConfig->element[i].repeat) +
+                   " type=\"number\" minlength=1 maxlength=2 >";
+        message += "</div><!-- class=inputblock-->\n";
+
         message += "</div>\n";
       }
-    }
-
-    for (int i = 0; i < MAXTEXTELEMENTS; i++) {
-      message += "<div class=\"matrixentry\" >\n";
-      message += "\t<div class=\"textentry\"> <label for=\"textentry" +
-                 String(i) + "\">Text:</label>\n";
-      message += "\t<textarea id=\"textentry" + String(i) +
-                 "\" name=\"textentry" + String(i) + "\"";
-      message += " maxlength=" + String(TEXTLENGTH) + ">";
-      message += String(myConfig->element[i].text) + "</textarea></div>\n";
-
-      message += "<div class=\"inputblock\" >\n";
-      message +=
-          "\t\t<label for=\"effects" + String(i) + "\"> Effect: </label>\n";
-      message += "\t\t<select name=\"effect" + String(i) + "\" id=\"effects" +
-                 String(i) + "\">\n";
-
-      for (EffectStruct_t e : EffectEntry) {
-        message += "\t\t\t<option value=" + String(e.effect);
-        if (e.effect == myConfig->element[i].effect) {
-          message += " selected";
-        }
-
-        message += " >" + e.label + "</option>\n";
-      }
-      message += "\t</select>\n";
-      message += "</div><!-- class=inputblock-->\n";
-      message += "<div class=\"inputblock\" >\n";
-      message +=
-          "\t\t<label for=\"positions" + String(i) + "\"> Position: </label>\n";
-      message += "\t\t<select name=\"position" + String(i) +
-                 "\" id=\"positions" + String(i) + "\">\n";
-
-      for (PositionStruct_t p : PositionEntry) {
-        message += "\t\t\t<option value=" + String(p.position);
-        if (p.position == myConfig->element[i].position) {
-          message += " selected";
-        }
-
-        message += +" >" + p.label + "</option>\n";
-      }
-      message += "\t</select>\n\n";
-      message += "</div><!-- class=inputblock-->\n";
-      message += "<div class=\"inputblock\" >\n";
-      message += "\t<label for=\"speed" + String(i) + "\">Speed:</label>\n";
-      message += "\t<input id=\"speed" + String(i) + "\" name=\"speed" +
-                 String(i) + "\" style=\"width:4em;\"";
-      message += " value=" + String(myConfig->element[i].speed) +
-                 " type=\"number\" minlength=1 maxlength=4 >";
-      message += "</div><!-- class=inputblock-->\n";
-      message += "<div class=\"inputblock\" >\n";
-      message += "\t<label for=\"repeat" + String(i) + "\">Repeat:</label>\n";
-      message += "\t<input id=\"repeat" + String(i) + "\" name=\"repeat" +
-                 String(i) + "\" style=\"width:3em;\"";
-      message += " value=" + String(myConfig->element[i].repeat) +
-                 " type=\"number\" minlength=1 maxlength=2 >";
-      message += "</div><!-- class=inputblock-->\n";
-
       message += "</div>\n";
-    }
+    } // End advancedReq
 
     message += " <div class=\"submitbutton\"> <input type=\"submit\" "
                "value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
-    message += "<div id=\"advancedbutton\"> <button "
-               "onclick=\"advancedButton()\">Advanced "
-               "Configuration</button><script>function advancedButton() {  "
-               "location.replace(\"/index.html?advanced\")}</script></div>";
-    message += "<div id=\"advancedbutton\"> <button "
+    if (advancedReq) {
+
+      message += "<div class=\"scriptbutton\" id=\"backbutton\"> <button "
+                 "onclick=\"backtoindexButton()\">"
+                 "Back </button><script>function backtoindexButton() {  "
+                 "location.replace(\"/index.html\")}</script></div>";
+
+      message += "<div class=\"scriptbutton\" id=\"updatebutton\"> <button "
+                 "onclick=\"updateButton()\"> "
+                 "Update Firmware </button><script>function updateButton() {  "
+                 "location.replace(\"/update.html\")}</script></div>";
+
+    } else {
+      message += "<div class=\"scriptbutton\" id=\"advancedbutton\"> <button "
+                 "onclick=\"advancedButton()\">Advanced "
+                 "Configuration</button><script>function advancedButton() {  "
+                 "location.replace(\"/index.html?advanced\")}</script></div>";
+    }
+    message += "<div class=\"scriptbutton\" id=\"logoutbutton\"> <button "
                "onclick=\"logout()\">Log "
                "Out</button><script>function logout() {  "
                "location.replace(\"/logout\")}</script></div>";
@@ -384,12 +430,12 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
     message += "</form></div>\n";
 
     message +=
-        "<div id=\"advancedbutton\"> <button "
+        "<div class=\"scriptbutton\" id=\"advancedbutton\"> <button "
         "onclick=\"updateButton()\">Update</button><script>function "
         "updateButton() {  location.replace(\"/update\")}</script></div>";
 
     message +=
-        "<div id=\"advancedbutton\"> <button "
+        "<div class=\"scriptbutton\"id=\"advancedbutton\"> <button "
         "onclick=\"indexButton()\">Back</button><script>function indexButton() "
         "{  location.replace(\"/index.html\")}</script></div>";
   }
@@ -407,10 +453,11 @@ void webInterface::handleSubmission(AsyncWebServerRequest *request) {
     LOGDEBUG1("Not Authenticated", request->url())
     return;
   }
-
   bool reconf = false;
   for (uint8_t i = 0; i < request->args(); i++) {
+
     const AsyncWebParameter *p = request->getParam(i);
+    LOGDEBUG3("sumbit.html parsing", p->name(), "=", p->value());
     if (p->name() == "webpass1") {
       // check on consistency
       for (uint8_t j = 0; j < request->args(); j++) {
@@ -436,7 +483,17 @@ void webInterface::handleSubmission(AsyncWebServerRequest *request) {
     } else {
       for (int j = 0; j < MAXTEXTELEMENTS; j++) {
         if (p->name() == "textentry" + String(j)) {
-          p->value().toCharArray(myConfig->element[j].text, TEXTLENGTH + 1);
+          p->value().toCharArray(myConfig->element[j].text, TEXTLENGTH);
+          reconf = true;
+        }
+
+        if (p->name() == "fieldentry" + String(j)) {
+          p->value().toCharArray(myConfig->element[j].field, FIELDVALUELENGTH);
+          reconf = true;
+        }
+
+        if (p->name() == "valueentry" + String(j)) {
+          p->value().toCharArray(myConfig->element[j].value, FIELDVALUELENGTH);
           reconf = true;
         }
 

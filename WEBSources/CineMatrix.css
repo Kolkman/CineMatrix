@@ -1,46 +1,66 @@
-body {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background: #dcdee4;
-    color:  black;
-}
-
-html,
-body {
-    margin: 0.5em;
-    height: 100%;
-}
-
-
-A:link{
-    color:rgb(213, 212, 145);
-}
-A:visited{
-    color:rgb(142, 209, 196);
-}
-A:hover{
-    color:#a5f8fc;
-}
-
-canvas {
-    display: block;
-    width: 300px;
-    margin: auto;
-}
-
-h1 {
-    color: cornsilk;
-    background-color:rgb(37, 53, 81);
-    font-size: xx-large;
-    padding: 10px;
-    letter-spacing: .4em;
-    margin-bottom: 1em;
-    text-align:center;
+:root {
+    --bodyBackground: rgb(10, 71, 128);
+    --baseColor: rgb(236, 225, 248);
+    --bgcolorHighlight: #160868;
+    --switchOnColor: rgb(8, 99, 39);
+    --blockBackground: #bfcdda;
+    --bgcolorHighlight2: #424d8c;
+    --bgcolorHighlight3: #8a8595;
+    --buttonColor: cornsilk;
+    --buttonHoverColor: rgb(143, 7, 7);
+    --buttonPressColor: rgb(114, 84, 59);
+    --boxShadow: 1px 4px 5px #777;
 
 }
+
+.fieldform {
+    display: grid;
+    place-content: center;
+}
+
+.fieldformheader {
+    font-weight: bolder;
+    background-color: var(--bgcolorHighlight3);
+}
+
+.fieldformexplanation {
+    max-width: 70ex;
+    width: fit-content;
+    font-style: italic;
+    background-color: var(--bgcolorHighlight3);
+}
+
+.matrixentryformheader {
+    font-weight: bolder;
+}
+
+.matrixentryexplanation {
+    width: fit-content;
+    max-width: 70ex;
+    font-style: italic;
+}
+
+.matrixentryform {
+    display: grid;
+    place-content: center;
+    margin-top: 3ex
+}
+
+input.fieldentry {
+    height: 1.2em;
+    width: 30ex;
+    display: inline-block;
+}
+
+.fieldentryblock {
+
+    background-color: var(--bgcolorHighlight3);
+}
+
 .matrixform .warning {
     color: cornsilk;
     background-color: azure;
-    font-size:x-large;
+    font-size: x-large;
     color: rgb(183, 67, 67);
 }
 
@@ -50,28 +70,33 @@ h1 {
     background-color: rgb(59, 57, 86);
     border: 2px solid rgb(141, 15, 17);
 }
+
 .webpassinput {
     color: cornsilk;
-    display:inline-block;
-}
-.webpasslabel  {
     display: inline-block;
 }
-.webpassfield  {
+
+.webpasslabel {
     display: inline-block;
 }
+
+.webpassfield {
+    display: inline-block;
+}
+
 .webpasslabel label {
     width: 20em;
 }
 
-.matrixentry{
-    color: cornsilk;
-    background-color: rgb(59, 57, 86);
-    border: 2px solid rgb(141, 15, 17);
+.matrixentry {
+
+    background-color: var(--bgcolorHighlight2);
+    border: 2px;
     margin: 10px;
     padding: 5px;
 
 }
+
 .matrixentry .textentry {
     display: block;
 }
@@ -80,27 +105,46 @@ h1 {
     display: inline-block;
 }
 
-.matrixentry label{
-    vertical-align: top ;
+.matrixentry label {
+    color: var(--baseColor);
+    vertical-align: top;
 }
+
 .matrixentry select {
     vertical-align: middle;
 
 }
 
-textarea {
-    height: 5em;
-    width: 97%;
+
+button {
+    border-radius: 8px;
+    box-shadow: 2px 2px;
+}
 }
 
-.submitbutton{
+.submitbutton {
     padding: 10px;
     padding-bottom: 30px;
 }
-#advancedbutton{
-    margin-left:10px;
-    margin-bottom:10px;
+
+.scriptbutton {
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
+
+div .fieldform {
+    width: auto;
+}
+
+
+
+
+form {
+    padding: 5px;
+    margin: 5px;
+    background-color: var(--blockBackground);
+}
+
 .firmware {
     border-top: 2px dotted grey;
     font-size: x-small;
@@ -108,48 +152,37 @@ textarea {
     margin-top: 20px;
 }
 
-textarea{
-    font-family:'Courier New', Courier, monospace;
+textarea {
+    font-family: 'Courier New', Courier, monospace;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
-     border-radius: 20px;
-     border: 1px solid #2d9fd9;
-color: rgb(42, 40, 40);
-     padding-left: 10px;
-     font-size: large;
-     width: 95%;
-    }
-    
+    border-radius: 5px;
+    border: 1px solid #2d9fd9;
+    color: rgb(42, 40, 40);
+    padding-left: 10px;
+    font-size: large;
+    width: 90%;
+    height: 2.3em;
+
+}
+
 textarea:focus {
-     outline: none;
-     font-style: bold;
-     border: 1px solid #a0d18c;
-     color: #3c1605;
-     background-color: lightgrey;
+    outline: none;
+    font-style: bold;
+    border: 1px solid #a0d18c;
+    color: #3c1605;
+    background-color: lightgrey;
 }
 
 
-:root {
-    --bodyBackground: rgb(249, 241, 230);
-    --baseColor: cornsilk;
-    --bgcolorHighlight: #683108; 
-    --switchOnColor: rgb(8, 99, 39);
-    --blockBackground: #eee;
-    --bgcolorHighlight2: #a4410c;
-    --buttonColor: cornsilk; 
-    --buttonHoverColor: rgb(143, 7, 7);
-    --buttonPressColor: rgb(114, 84, 59);
-    --boxShadow: 1px 4px 5px #777;
-
-  }
-  
 
 
 
-html,
+
+
 body {
-   margin: 0; 
-   
+    margin: 10px;
+
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background: var(--bodyBackground);
     color: black;
@@ -158,14 +191,17 @@ body {
 
 @media only screen and (min-width: 600px) {
     #bodyBlock {
-      width: 640px;;
+        width: 640px;
+        ;
     }
-  }
-  @media only screen and (max-width: 600px) {
+}
+
+@media only screen and (max-width: 600px) {
     #bodyBlock {
-      width: 320px;;
+        width: 320px;
+        ;
     }
-  }
+}
 
 
 
@@ -252,7 +288,7 @@ div.switchlabel {
     padding-bottom: 15px;
 }
 
-.btn{
+.btn {
     color: var(--buttonColor);
     width: 120px;
     text-align: center;
@@ -265,15 +301,15 @@ div.switchlabel {
     background-color: var(--bgcolorHighlight2);
     box-shadow: 1px 4px 5px #777;
 }
+
 .btn:hover {
     background-color: var(--buttonHoverColor);
 }
+
 .btn:active {
     background-color: var(--buttonPressColor);
     box-shadow: 0px 0px 4px #777;
 }
-
-
 
 
 
@@ -328,7 +364,10 @@ div#graph {
 }
 
 input {
-    border-radius: 12px;
+    border-radius: 8px;
+    box-shadow: 2px 2px;
+    margin-left: 10px;
+    margin-bottom: 10px;
 }
 
 .PIDParameterValuePair {
@@ -372,32 +411,34 @@ input {
 
 @media only screen and (max-width: 600px) {
     .configblock {
-      width: 300px;
+        width: 300px;
     }
-  }
-  @media only screen and (min-width: 600px) {
-    .configblock {
-      width: 300px;
-    }
-  }
+}
 
-  @media only screen and (max-width: 600px) {
-    .configblock.fullwidth {
-        width:305px;
-      
-  
+@media only screen and (min-width: 600px) {
+    .configblock {
+        width: 300px;
     }
-  }
-  @media only screen and (min-width: 600px) {
-    .configblock.fullwidth{
-        width:auto;
+}
+
+@media only screen and (max-width: 600px) {
+    .configblock.fullwidth {
+        width: 305px;
+
+
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .configblock.fullwidth {
+        width: auto;
         width: 600px;
     }
-  }
+}
 
 
 .configblock {
-  display: inline-block;
+    display: inline-block;
     vertical-align: top;
     border: 1px dotted black;
     margin-right: auto;
@@ -409,12 +450,14 @@ input {
 }
 
 .configurationMessage {
-    text-align:center;
+    text-align: center;
 }
+
 #resetdiv {
     color: var(--baseColor);
     background-color: rgba(255, 0, 0, 0.645);
-} 
+}
+
 #resetdiv:hover {
     background-color: var(--buttonHoverColor);
 }
@@ -486,8 +529,8 @@ input {
 .waveStrength-0 #w3 path,
 .waveStrength-0 #w2 path,
 .waveStrength-0 #w1 path,
-.waveStrength-0 #w0 circle  {
-  stroke: #b82b2b57 !important;
+.waveStrength-0 #w0 circle {
+    stroke: #b82b2b57 !important;
 }
 
 .wifiRaw {
@@ -495,24 +538,27 @@ input {
 }
 
 
-.tableTable{
-	display: table;
-	width: 100%;
+.tableTable {
+    display: table;
+    width: 100%;
 }
-.tableRow{
+
+.tableRow {
     display: table-row;
 }
-.tableBody{
-    display: table-row-group; 
+
+.tableBody {
+    display: table-row-group;
 }
-.tableField{
+
+.tableField {
     display: table-cell;
 }
 
 /* Display as a table */
-.networkSelection{
-    width:auto;
-    border:1px solid  #fafafa;
+.networkSelection {
+    width: auto;
+    border: 1px solid #fafafa;
 
 }
 
@@ -525,28 +571,29 @@ input {
 .tableField.redCross {
     width: 20px;
 }
+
 #powerGauge {
-    width:90%;
+    width: 90%;
 }
 
 /* --------------- Configuration page-------- */
 
 
-.redCross { 
+.redCross {
 
     display: inline-block;
 }
-.redCross img{
+
+.redCross img {
     width: 15px;
 }
 
 div#wifiNetTable,
 
-div#wifiSettings
-{
+div#wifiSettings {
     border: 1px solid black;
-    padding-left:3px;
-    padding-right:3px;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
 
@@ -556,7 +603,7 @@ div#wifiSettings
     width: calc(100% - 12px);
 }
 
-#scantable{
+#scantable {
     max-width: 350px;
 }
 
@@ -570,17 +617,20 @@ div#wifiSettings
     margin: auto;
     visibility: hidden;
     animation: spin 1s infinite linear;
-display:none;
+    display: none;
     justify-content: center;
 }
+
 #loading.display {
     visibility: visible;
     display: flex;
 }
+
 @keyframes spin {
     from {
         transform: rotate(0deg);
     }
+
     to {
         transform: rotate(360deg);
     }

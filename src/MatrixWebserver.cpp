@@ -28,8 +28,7 @@ bool MatrixWebServer::authenticate(AsyncWebServerRequest *request) {
      LOGINFO1("authenticate for:", String(request->url())); 
         if (is_authenticated(request))
         {
-
-            LOGINFO("Authentication Successful");
+            LOGINFO0("Authentication Successful");
             return true;
         }
         LOGINFO0("Authentication Failed");
