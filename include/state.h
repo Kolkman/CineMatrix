@@ -7,10 +7,9 @@
 class MatrixState
 {
 public:
-    MatrixState();
+    MatrixState(MatrixConfig *);
     char * getText();
-    bool init();
-    MatrixConfig myConfig;  
+    MatrixConfig *myConfig;  
     textPosition_t getPosition();
     textEffect_t getEffect();
     uint16_t getSpeed();

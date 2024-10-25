@@ -32,6 +32,7 @@ webInterface::webInterface(MatrixConfig *config, const char *password) {
 webInterface::~webInterface() { LOGDEBUG0("Webinterfce Destructor"); }
 
 void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
+ 
   LOGINFO0("Setting up Webserver");
 
   // We set this for later. Wnen there are no credentials set we want to keep
@@ -64,7 +65,7 @@ void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
   webAPI.requireAuthorization(true);
   //  setupWebSrv(wifiMngr);
   LOGDEBUG0("Starting the Webserver");
-  server->begin(); /// Webserver is now running....
+  //server->begin(); /// Webserver is now running....
 
   if (server == nullptr) {
     LOGERROR0("WEBinterface: Server NULLPTR - halting execution");
@@ -107,6 +108,7 @@ void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
 #endif
   server->begin();
   LOGINFO0("HTTP server started");
+
 }
 
 void webInterface::InitPages() {
@@ -123,13 +125,7 @@ void webInterface::InitPages() {
   DEF_HANDLE_CineMatrix_css;
   DEF_HANDLE_redCircleCrossed_svg;
   DEF_HANDLE_helpers_js;
-  /*
 
-      DEF_HANDLE_EspressoMachine_svg;
-      DEF_HANDLE_redCircleCrossed_svg;
-      DEF_HANDLE_switch_css;
-      DEF_HANDLE_firmware_js;
-      */
 }
 
 void webInterface::handleNotFound(AsyncWebServerRequest *request) {

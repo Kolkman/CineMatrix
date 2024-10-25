@@ -42,11 +42,14 @@ const uint8_t PROGMEM empty[F_EMPTY * W_EMPTY] = // gobbling pacman animation
 MD_Parola Display =
     MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
-
-MatrixState myState;
-webInterface myInterface(&myState.myConfig);
+MatrixConfig myConfig;
+MatrixState myState(&myConfig);
+webInterface myInterface(&myConfig);
 WiFiManager wifiMngr(&myInterface);
 char firmwareString[50];
+
+
+
 
 void setup() {
 
@@ -58,6 +61,7 @@ void setup() {
   }
   LOGINFO1("Starting with firmwareversion: ", FIRMWAREVERSION);
   
+  
 
   Display.begin();
   Display.setIntensity(0);
@@ -65,18 +69,29 @@ void setup() {
   Display.setSpriteData(movie, W_MOVIE, F_MOVIE, empty, W_EMPTY, F_EMPTY);
   Display.print(FIRMWAREVERSION);
 
-  if (!myState.init()) {
-    Display.displayScroll("Init Error: filesystem problems", PA_RIGHT,
-                          PA_SCROLL_LEFT, 200);
-  } else {
+ if (!myConfig.prepareFS())
+    {
+        LOGWARN0("Failed to mount LittleFS !");
+         Display.print("Possiple Deffect, mounting LittleFS");
+        delay(60*10000);
+       ESP.restart();
+    }
+    else
+    {
+        LOGINFO0("Mounted.");
+    }
+
+
+    myConfig.loadConfig();
+
     strcpy(firmwareString, "Version ");
     strcat(firmwareString, FIRMWAREVERSION);
 
     
     LOGINFO0(firmwareString);
-  }
+  
 
-
+  
   myInterface.setupWebSrv(&wifiMngr);
 
 }

@@ -1,49 +1,18 @@
 #include "state.h"
+#include "config.h"
 #include "debug.h"
-MatrixState::MatrixState()
+MatrixState::MatrixState(MatrixConfig * mc)
 {
     // Empty
+    myConfig= mc;
     elementID = 0;
     elementItterator = 0;
 }
 
-bool MatrixState::init()
-{
-    
-    if (!myConfig.prepareFS())
-    {
-        LOGWARN0("Failed to mount LittleFS !");
-        return false;
-    }
-    else
-    {
-        LOGINFO0("Mounted.");
-    }
-
-    if (!myConfig.loadConfig())
-    {
-        LOGWARN0("Failed to load config. Using default values and creating config...");
-        if (!myConfig.saveConfig())
-        {
-            LOGWARN0("Failed to save config");
-            return false;
-        }
-        else
-        {
-            LOGINFO0("Config saved");
-            return true;
-        }
-    }
-    else
-    {
-        LOGINFO0("Config loaded");
-        return true;
-    }
-}
 
 bool MatrixState::stateChange()
 {
-    if (elementItterator < myConfig.element[elementID].repeat ){
+    if (elementItterator < myConfig->element[elementID].repeat ){
         elementItterator++;
     }else{
         elementItterator=1;
@@ -60,20 +29,20 @@ bool MatrixState::stateChange()
 
 char *MatrixState::getText()
 {
-    return myConfig.element[elementID].matrixtext;
+    return myConfig->element[elementID].matrixtext;
 }
 
 textPosition_t MatrixState::getPosition()
 {
-    return myConfig.element[elementID].position;
+    return myConfig->element[elementID].position;
 }
 
 textEffect_t MatrixState::getEffect()
 {
-    return myConfig.element[elementID].effect;
+    return myConfig->element[elementID].effect;
 }
 
 uint16_t MatrixState::getSpeed()
 {
-    return myConfig.element[elementID].speed;
+    return myConfig->element[elementID].speed;
 }

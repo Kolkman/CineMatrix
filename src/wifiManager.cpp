@@ -126,7 +126,7 @@ void WiFiManager::loopPortal() {
   }
   LOGINFO1(F("Waiting for Client Action"),
            myInterface->_waitingForClientAction);
-  LOGINFO("startConfigPortal : Exits loop");
+  LOGINFO0("startConfigPortal : Exits loop");
   return;
 }
 

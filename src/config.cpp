@@ -39,6 +39,7 @@ bool MatrixConfig::prepareFS() {
 }
 
 void MatrixConfig::setDefaults() {
+  LOGDEBUG0("Setting Defaults");
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {
     strcpy(element[i].text, "");
     element[i].effect = PA_SCROLL_LEFT;
@@ -134,9 +135,7 @@ bool MatrixConfig::loadConfig() {
   if (jsonDocument["webpass"])
     strncpy(webPass, jsonDocument["webpass"], WEBPASS_BUFF_SIZE);
 
-  if (!strcmp(webPass, DEFAULTPASS)) // Comparing variable to define
-  {
-    LOGINFO1("Web Password not set", webPass)
+ 
 
     // Only use texts if the default password is not set.
     int cntr = 0;
@@ -166,8 +165,6 @@ bool MatrixConfig::loadConfig() {
       cntr++;
     }
 
-    strcpy(element[0].text, "Connect to the server to change your password ");
-  }
   return true;
 }
 
@@ -187,6 +184,10 @@ bool MatrixConfig::saveConfig() {
     elmnt["position"] = element[i].position;
     elmnt["speed"] = element[i].speed;
     elmnt["repeat"] = element[i].repeat;
+
+    for (int i = 0; i < MAXTEXTELEMENTS; i++) {
+      createtMatrixText(&element[i]);
+    }
   }
 
   JsonArray ssid = jsonDocument.createNestedArray("WifiCredential_ssid");
@@ -239,18 +240,18 @@ String MatrixConfig::passForSSID(String _SSID) {
   return (pass);
 }
 
-
-
-
 void MatrixConfig::createtMatrixText(textelements *el) {
-  if (!strcmp(el->text,"")){
-    strcpy(el->matrixtext,"");
+  if (!strcmp(el->text, "")) {
+    strcpy(el->matrixtext, "");
     return;
   }
-  String MatrixString=String(el->text);
+  String MatrixString = String(el->text);
 
   for (int i = 0; i < MAXTEXTELEMENTS; i++) {
-     MatrixString.replace("[[" + String(element[i].field) + "]]", element[i].value);
+    MatrixString.replace("[[" + String(element[i].field) + "]]",
+                         element[i].value);
   }
-  strncpy(el->matrixtext,MatrixString.c_str(),MATRIXTEXTLENGTH);
+  strncpy(el->matrixtext, MatrixString.c_str(), MATRIXTEXTLENGTH);
 }
+
+
