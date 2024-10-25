@@ -25,13 +25,13 @@ void webInterfaceOTAUpdate::begin(MatrixWebServer *server) {
     request->redirect("/update.html");
   });
 
-  _server->on("/update.html", HTTP_GET, [&](AsyncWebServerRequest *request) {
-    _server->authenticate(request);
-    AsyncWebServerResponse *response = request->beginResponse(
-        200, "text/html", update_html, update_html_len);
-    response->addHeader("Content-Encoding", "gzip");
-    request->send(response);
-  });
+   _server->on("/update.html", HTTP_GET, [&](AsyncWebServerRequest *request)
+                {
+        if (_server->authenticate(request)){
+        AsyncWebServerResponse *response = request->beginResponse(200, "text/html", update_html, update_html_len);
+        response->addHeader("Content-Encoding", "gzip");
+        request->send(response); }});
+
 
   server->on(
       "/doUpdate", HTTP_POST, [](AsyncWebServerRequest *request) {},
@@ -101,16 +101,18 @@ void webInterfaceOTAUpdate::handleDoUpdate(AsyncWebServerRequest *request,
     }
 
     if (final) {
-      Serial.println("FINAL");
+      LOGDEBUG0("FINAL");
       AsyncWebServerResponse *response =
           request->beginResponse(200, "text/plain", "New firmware loaded");
       response->addHeader("Refresh", "20");
       response->addHeader("Location", "/");
       request->send(response);
+      delay(100);
       if (!Update.end(true)) {
         Update.printError(Serial);
       } else {
         LOGINFO0("Update complete");
+
         Serial.flush();
         delay(4000);
         ESP.restart();
@@ -120,5 +122,5 @@ void webInterfaceOTAUpdate::handleDoUpdate(AsyncWebServerRequest *request,
 }
 
 void webInterfaceOTAUpdate::printProgress(size_t prg, size_t sz) {
-  LOGINFO1("Progress: %d%%\n", (prg * 100) / content_len);
+  LOGINFO2("Progress: " , (prg * 100) / content_len, "%");
 }

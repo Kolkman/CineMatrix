@@ -15,7 +15,11 @@
 #include "pages/redCircleCrossed.svg.h"
 
 #include "pages/CineMatrix.css.h"
-#include <ElegantOTA.h>
+#ifdef ELEGANT_OTA
+#include <AsyncElegantOTA.h>
+#else
+#include "webInterfaceOTAUpdate.h"
+#endif
 
 webInterface::webInterface(MatrixConfig *config, const char *password) {
   LOGDEBUG0("Webinterfce Constructor");
@@ -96,8 +100,11 @@ void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
   DEF_HANDLE_CineMatrix_css;
   DEF_HANDLE_helpers_js;
 
-  ElegantOTA.begin(server);
-
+#ifdef ELEGANT_OTA
+  AsyncElegantOTA.begin(server);
+#else
+  webOTAUpdate.begin(server);
+#endif
   server->begin();
   LOGINFO0("HTTP server started");
 }

@@ -36,6 +36,7 @@ bool MatrixWebServer::authenticate(AsyncWebServerRequest *request) {
         response->addHeader("Location", "/WebLogin.html?msg=Authentication Failed, you must log in.");
         response->addHeader("Cache-Control", "no-cache");
         request->send(response);
+     
         return false;
     }
 }

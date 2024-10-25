@@ -6,11 +6,15 @@
     --blockBackground: #bfcdda;
     --bgcolorHighlight2: #424d8c;
     --bgcolorHighlight3: #8a8595;
-    --buttonColor: cornsilk;
-    --buttonHoverColor: rgb(143, 7, 7);
-    --buttonPressColor: rgb(114, 84, 59);
+    --buttonColor: rgb(87, 81, 139);
+    --buttonHoverColor: rgb(63, 51, 103);
+    --buttonPressColor: rgb(231, 114, 19);
     --boxShadow: 1px 4px 5px #777;
 
+}
+
+#notFoundInfo {
+    color: var(--baseColor);
 }
 
 .fieldform {
@@ -28,6 +32,15 @@
     width: fit-content;
     font-style: italic;
     background-color: var(--bgcolorHighlight3);
+}
+
+.matrixform{
+    background: var (--bgcolorHighlight2);
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(right, var(--bgcolorHighlight3), var(--bgcolorHighlight2));
+    background: -moz-linear-gradient(right, var(--bgcolorHighlight3), var(--bgcolorHighlight2));
+    background: -o-linear-gradient(right, var(--bgcolorHighlight3), var(--bgcolorHighlight2));
+    background: linear-gradient(to left, var(--bgcolorHighlight3), var(--bgcolorHighlight2));
 }
 
 .matrixentryformheader {
@@ -59,7 +72,7 @@ input.fieldentry {
 
 .matrixform .warning {
     color: cornsilk;
-    background-color: azure;
+    background-color: azure;    
     font-size: x-large;
     color: rgb(183, 67, 67);
 }
@@ -142,7 +155,6 @@ div .fieldform {
 form {
     padding: 5px;
     margin: 5px;
-    background-color: var(--blockBackground);
 }
 
 .firmware {
@@ -181,10 +193,21 @@ textarea:focus {
 
 
 body {
+
+
+    background: var (--bgcolorHighlight);
+    /* fallback for old browsers */
+    background: -webkit-linear-gradient(right, var(--bgcolorHighlight2), var(--bgcolorHighlight));
+    background: -moz-linear-gradient(right, var(--bgcolorHighlight2), var(--bgcolorHighlight));
+    background: -o-linear-gradient(right, var(--bgcolorHighlight2), var(--bgcolorHighlight));
+    background: linear-gradient(to left, var(--bgcolorHighlight2), var(--bgcolorHighlight));
+    font-family: "Roboto", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+
     margin: 10px;
 
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    background: var(--bodyBackground);
     color: black;
 }
 

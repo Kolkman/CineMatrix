@@ -10,7 +10,7 @@
 
     </script>
     <link rel="stylesheet" type="text/css" href="CineMatrix.css" media="all" />
-   <!--
+   
    <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
@@ -51,7 +51,7 @@
             width: 100%;
             border: 0;
             padding: 15px;
-
+            color: var(--baseColor);
             font-size: 14px;
             -webkit-transition: all 0.3 ease;
             transition: all 0.3 ease;
@@ -120,27 +120,10 @@
             color: #EF3B3A;
         }
 
-        body {
-            background: var (--bgcolorHighlight);
-            /* fallback for old browsers */
-            background: -webkit-linear-gradient(right, var(--bgcolorHighlight2), var(--bgcolorHighlight));
-            background: -moz-linear-gradient(right, var(--bgcolorHighlight2), var(--bgcolorHighlight));
-            background: -o-linear-gradient(right, var(--bgcolorHighlight2), var(--bgcolorHighlight));
-            background: linear-gradient(to left, var(--bgcolorHighlight2), var(--bgcolorHighlight));
-            font-family: "Roboto", sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
 
-        .logo-image {
-            background-image: url(./EspressoMachine.svg);
-            background-position: center;
-            background-size: contain;
-            background-repeat: no-repeat;
-            height: 120px;
-        }
+    
     </style>
-    -->
+    
     <script>
     </script>
 </head>
@@ -153,7 +136,7 @@
 
                 <input id="password" name="password" type="password" placeholder="password" />
                 <button type='submit' name='SUBMIT' value='Submit'>Login</button>
-                <div style="margin-top: 10px; color: red;font-size: small;" id="message"></div>
+                <div style="margin-top: 10px; color: red;font-size: smaller; font-weight: bold;" id="message"></div>
             </form>
         </div>
     </div>
