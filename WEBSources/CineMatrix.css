@@ -1,3 +1,10 @@
+/*
+*  CineMatrix.css
+*  (c) Olaf Kolkman
+*  Needs cleanup
+*/
+
+
 :root {
     --bodyBackground: rgb(10, 71, 128);
     --baseColor: rgb(236, 225, 248);
@@ -6,12 +13,14 @@
     --blockBackground: #bfcdda;
     --bgcolorHighlight2: #424d8c;
     --bgcolorHighlight3: #8a8595;
-    --buttonColor: rgb(87, 81, 139);
+    --buttonColor: rgb(177, 173, 211);
     --buttonHoverColor: rgb(63, 51, 103);
     --buttonPressColor: rgb(231, 114, 19);
     --boxShadow: 1px 4px 5px #777;
 
 }
+
+
 
 #notFoundInfo {
     color: var(--baseColor);
@@ -56,12 +65,14 @@
 
 .matrixentryformheader {
     font-weight: bolder;
+    color: var(--baseColor)
 }
 
 .matrixentryexplanation {
     width: fit-content;
     max-width: 70ex;
     font-style: italic;
+    color: var(--baseColor)
 }
 
 .matrixentryform {
@@ -87,6 +98,15 @@ input.fieldentry {
     font-size: x-large;
     color: rgb(183, 67, 67);
 }
+
+.valueentry label{
+    color: var(--baseColor);
+    min-width: 10ex;
+    text-align: right;
+    display:inline-block
+}
+
+
 
 .webpassentry {
     margin: 5px;
@@ -146,15 +166,19 @@ button {
 }
 }
 
-.submitbutton {
-    padding: 10px;
-    padding-bottom: 30px;
-}
 
-.scriptbutton {
+
+button.scriptbutton {
     margin-left: 10px;
     margin-bottom: 10px;
 }
+
+div.scriptbutton{
+    display: inline;
+    margin: 30px;
+}
+
+
 
 div .fieldform {
     width: auto;
@@ -324,7 +348,8 @@ div.switchlabel {
 
 .btn {
     color: var(--buttonColor);
-    width: 120px;
+    width: 140px;
+    font-size:11pt;
     text-align: center;
     border: 1px solid #000;
     margin: 4px;
@@ -335,7 +360,9 @@ div.switchlabel {
     background-color: var(--bgcolorHighlight2);
     box-shadow: 1px 4px 5px #777;
 }
-
+#portaltext{
+    width: calc(100% - 180px)
+}
 .btn:hover {
     background-color: var(--buttonHoverColor);
 }
@@ -404,6 +431,10 @@ input {
     margin-bottom: 10px;
 }
 
+.submitbutton input {
+    margin-left:5ex;
+}
+
 .PIDParameterValuePair {
     display: grid;
     grid-template-columns: minmax(22px, .1fr) 1fr;
@@ -435,6 +466,7 @@ input {
     width: 50%;
     min-width: 160px;
     max-width: 200px
+    display: inline;
 }
 
 #configAPI {

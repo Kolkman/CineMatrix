@@ -4,6 +4,7 @@
 #include "config.h"
 #include "debug.h"
 #include "defaults.h"
+#include "esp32-hal.h"
 #include "state.h"
 #include "webInterface.h"
 #include "wifiManager.h"
@@ -47,9 +48,8 @@ MatrixState myState(&myConfig);
 webInterface myInterface(&myConfig);
 WiFiManager wifiMngr(&myInterface);
 char firmwareString[50];
-
-
-
+unsigned long loopStart;
+String connectmessage;
 
 void setup() {
 
@@ -60,8 +60,6 @@ void setup() {
     delay(100);
   }
   LOGINFO1("Starting with firmwareversion: ", FIRMWAREVERSION);
-  
-  
 
   Display.begin();
   Display.setIntensity(0);
@@ -69,34 +67,40 @@ void setup() {
   Display.setSpriteData(movie, W_MOVIE, F_MOVIE, empty, W_EMPTY, F_EMPTY);
   Display.print(FIRMWAREVERSION);
 
- if (!myConfig.prepareFS())
-    {
-        LOGWARN0("Failed to mount LittleFS !");
-         Display.print("Possiple Deffect, mounting LittleFS");
-        delay(60*10000);
-       ESP.restart();
-    }
-    else
-    {
-        LOGINFO0("Mounted.");
-    }
+  if (!myConfig.prepareFS()) {
+    LOGWARN0("Failed to mount LittleFS !");
+    Display.print("Possiple Deffect, mounting LittleFS");
+    delay(60 * 10000);
+    ESP.restart();
+  } else {
+    LOGINFO0("Mounted.");
+  }
 
+  myConfig.loadConfig();
 
-    myConfig.loadConfig();
+  strcpy(firmwareString, "Version ");
+  strcat(firmwareString, FIRMWAREVERSION);
 
-    strcpy(firmwareString, "Version ");
-    strcat(firmwareString, FIRMWAREVERSION);
+  LOGINFO0(firmwareString);
 
-    
-    LOGINFO0(firmwareString);
-  
-
-  
   myInterface.setupWebSrv(&wifiMngr);
-
+  loopStart = millis();
+  connectmessage = "Connect to http://" +
+                   String(wifiMngr.getRFC952_hostname()) + "/ or http://" +
+                   wifiMngr.getLocalIP().toString() + "/";
+  ;
 }
 
 void loop() {
+
+  while (millis() < loopStart + SHOWINFODURATION * 1000) {
+    if (Display.displayAnimate()) {
+
+      Display.displayClear();
+      Display.displayScroll(connectmessage.c_str(), PA_CENTER, PA_SCROLL_LEFT,
+                            50);
+    }
+  }
 
   if (Display.displayAnimate()) {
     myState.stateChange();

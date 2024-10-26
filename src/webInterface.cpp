@@ -2,6 +2,7 @@
 #include "ESPAsyncWebServer.h"
 #include "config.h"
 #include "debug.h"
+#include "defaults.h"
 #include "pgmspace.h"
 #include "sha1.h"
 #include "webInterfaceAPI.h"
@@ -31,6 +32,8 @@ webInterface::webInterface(MatrixConfig *config, const char *password) {
 
 webInterface::~webInterface() { LOGDEBUG0("Webinterfce Destructor"); }
 
+
+extern MD_Parola Display;
 void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
  
   LOGINFO0("Setting up Webserver");
@@ -486,15 +489,7 @@ void webInterface::handleSubmission(AsyncWebServerRequest *request) {
           if (!p->value().equals(myConfig->webPass)) {
             strncpy(myConfig->webPass, p->value().c_str(), WEBPASS_BUFF_SIZE);
             LOGINFO1("Changing web password to:", (myConfig->webPass));
-            if (strcmp(myConfig->webPass, DEFAULTPASS)) {
-              strncpy(myConfig->element[0].text, DEFAULTLINE0, TEXTLENGTH);
-              strncpy(myConfig->element[1].text, DEFAULTLINE1, TEXTLENGTH);
-              strncpy(myConfig->element[2].text, DEFAULTLINE2, TEXTLENGTH);
-
-              for (int i = 3; i < MAXTEXTELEMENTS; i++) {
-                strncpy(myConfig->element[i].text, "", TEXTLENGTH);
-              }
-            }
+         
             reconf = true;
           }
         }

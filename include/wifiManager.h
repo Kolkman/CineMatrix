@@ -1,10 +1,11 @@
 #pragma once
+#include "IPAddress.h"
 #ifndef wifiManager_h
 #define wifiManager_h
 
-#include <ESPAsyncDNSServer.h>
-#include "defaults.h"
 #include "WiFiMulti.h"
+#include "defaults.h"
+#include <ESPAsyncDNSServer.h>
 #include <MD_Parola.h>
 // #include "webinterface.h"
 
@@ -19,19 +20,18 @@
 
 #define MIN_AP_PASSWORD_SIZE 8
 #define DNS_PORT 53
-#define RFC952_HOSTNAME_MAXLEN  63 // HOSTNAME can be up to 255 chars, but we'll take DNS label length.
+#define RFC952_HOSTNAME_MAXLEN                                                 \
+  63 // HOSTNAME can be up to 255 chars, but we'll take DNS label length.
      // (longer than  in original code)
 #ifndef RFC952_HOSTNAME
 #define RFC952_HOSTNAME "CineMatrix"
 #endif
-
 
 #define MAX_WIFI_CHANNEL 13
 
 #ifndef ALWAYS_START_WITH_PORTAL
 #define ALWAYS_START_WITH_PORTAL false
 #endif
-
 
 #ifndef CONFIGPORTAL_TIMEOUT
 #define CONFIGPORTAL_TIMEOUT 60 * 1000
@@ -96,9 +96,10 @@ public:
   void setupWiFiAp(WiFi_AP_IPConfig *);
   void loopPortal();
   uint8_t connectMultiWiFi(MatrixConfig *);
-
+  char *getRFC952_hostname(const char *);
+  char *getRFC952_hostname();
   AsyncDNSServer *dnsServer;
-
+  IPAddress getLocalIP();
   // SSID and PW for Config Portal
 
 private:
@@ -106,7 +107,6 @@ private:
   String ApSSID;
   String ApPass;
   bool connect;
-  char *getRFC952_hostname(const char *);
   char RFC952_hostname[RFC952_HOSTNAME_MAXLEN + 1];
   unsigned long _configPortalStart = 0;
 };

@@ -8,6 +8,7 @@
 /// lot of configuration (this is very ESP32 specific now)
 
 #include "wifiManager.h"
+#include "MD_Parola.h"
 #include "WiFiMulti.h"
 #include "config.h"
 #include "debug.h"
@@ -120,7 +121,7 @@ void WiFiManager::loopPortal() {
          millis() < _configPortalStart + CONFIGPORTAL_TIMEOUT) {
 
     if (Display.displayAnimate())
-      Display.displayText( toDisplay.c_str(), PA_CENTER, 100, 0, PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+      Display.displayText( toDisplay.c_str(), PA_CENTER, 100, 0, PA_SCROLL_RIGHT, PA_SCROLL_LEFT);
 
     yield();
   }
@@ -203,12 +204,15 @@ LOGDEBUG1("Hostname set to ", RFC952_hostname);
   return status;
 }
 
+char *WiFiManager::getRFC952_hostname(){
+  return RFC952_hostname;
+}
+
 char *WiFiManager::getRFC952_hostname(const char *iHostname)
 // From
 // https://github.com/khoih-prog/ESPAsync_WiFiManager/blob/master/src/ESPAsync_WiFiManager-Impl.h
 // (c) by Khoih-prog
 {
-
   memset(RFC952_hostname, 0, sizeof(RFC952_hostname));
 
   size_t len = (RFC952_HOSTNAME_MAXLEN < strlen(iHostname))
@@ -228,4 +232,9 @@ char *WiFiManager::getRFC952_hostname(const char *iHostname)
     RFC952_hostname[j] = iHostname[len - 1];
 
   return RFC952_hostname;
+}
+
+IPAddress WiFiManager::getLocalIP(){
+  return WiFi.localIP();
+
 }

@@ -18,6 +18,9 @@
 
 #define RFC952_HOSTNAME "CineMatrix"
 
+#define SHOWINFODURATION 60 // time to show the information t startup in seconds
+
+
 #define MAXTEXTELEMENTS 5 // Amount of different sentences to display
 
 // Note you FIELDS have to match what is in LINES
