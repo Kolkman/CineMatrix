@@ -132,39 +132,42 @@ bool MatrixConfig::loadConfig() {
         break;
     }
   }
+
+  int cntr = 0;
+  for (JsonObject el : jsonDocument["elements"].as<JsonArray>()) {
+    // we should check for corruption, but alas.
+    if (cntr < MAXTEXTELEMENTS) {
+
+      element[cntr].effect = (textEffect_t)el["effect"].as<int>();
+      element[cntr].position = (textPosition_t)el["position"].as<int>();
+      element[cntr].repeat = el["repeat"].as<int>();
+      element[cntr].speed = el["speed"].as<int>();
+      if (el["text"]) {
+        strncpy(element[cntr].text, el["text"].as<const char *>(), TEXTLENGTH);
+      }
+      if (el["field"]) {
+        strncpy(element[cntr].field, el["field"].as<const char *>(),
+                FIELDVALUELENGTH);
+      }
+      if (el["value"]) {
+        strncpy(element[cntr].value, el["value"].as<const char *>(),
+                FIELDVALUELENGTH);
+      }
+      /// Here we  do a bunch magic to create the actual displayd text
+      createtMatrixText(&element[cntr]);
+    }
+    cntr++;
+  }
   if (jsonDocument["webpass"])
     strncpy(webPass, jsonDocument["webpass"], WEBPASS_BUFF_SIZE);
-
- 
-
-    // Only use texts if the default password is not set.
-    int cntr = 0;
-    for (JsonObject el : jsonDocument["elements"].as<JsonArray>()) {
-      // we should check for corruption, but alas.
-      if (cntr < MAXTEXTELEMENTS) {
-
-        element[cntr].effect = (textEffect_t)el["effect"].as<int>();
-        element[cntr].position = (textPosition_t)el["position"].as<int>();
-        element[cntr].repeat = el["repeat"].as<int>();
-        element[cntr].speed = el["speed"].as<int>();
-        if (el["text"]) {
-          strncpy(element[cntr].text, el["text"].as<const char *>(),
-                  TEXTLENGTH);
-        }
-        if (el["field"]) {
-          strncpy(element[cntr].field, el["field"].as<const char *>(),
-                  FIELDVALUELENGTH);
-        }
-        if (el["value"]) {
-          strncpy(element[cntr].value, el["value"].as<const char *>(),
-                  FIELDVALUELENGTH);
-        }
-        /// Here we  do a bunch magic to create the actual displayd text
-        createtMatrixText(&element[cntr]);
-      }
-      cntr++;
+  if (!strcmp(webPass, DEFAULTPASS)) {
+    LOGDEBUG("Config contains Default Pass");
+    strncpy(element[0].matrixtext,
+           "Verander eerst het passsword van de CineMatrix server",MATRIXTEXTLENGTH);
+    for (int i = 1; i < MAXTEXTELEMENTS; i++) {
+      strcpy(element[i].matrixtext, "");
     }
-
+  }
   return true;
 }
 
@@ -253,5 +256,3 @@ void MatrixConfig::createtMatrixText(textelements *el) {
   }
   strncpy(el->matrixtext, MatrixString.c_str(), MATRIXTEXTLENGTH);
 }
-
-
