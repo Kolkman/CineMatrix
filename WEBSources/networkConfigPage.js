@@ -250,7 +250,7 @@ function c(l, passwd) {
     for (let i = 0; i < maxNets; i++) {
 
         if (document.getElementById("wifi_ssid" + i).value != "") {
-            console.log("wifi_ssid" + i + " is defined" + document.getElementById("s" + i).value);
+            console.log("wifi_ssid" + i + " is defined" + document.getElementById("wifi_ssid" + i).value);
 
         } else {
             document.getElementById('wifi_ssid' + i).value = l.innerText || l.textContent;
@@ -261,15 +261,11 @@ function c(l, passwd) {
 
 
     }
-
-
-
-
 }
 
 function resetSSID(i) {
-    document.getElementById('s' + i).value = "";
-    document.getElementById('p' + i).value = "";
+    document.getElementById('wifi_ssid' + i).value = "";
+    document.getElementById('wifi_pw' + i).value = "";
 
 }
 

@@ -4,6 +4,7 @@
 #include "wifiManager.h"
 #include <Arduino.h>
 
+
 class webInterfaceAPI {
 public:
   void begin(MatrixWebServer *, MatrixConfig *);
@@ -25,6 +26,7 @@ private:
   void handleIsAuthenticated(AsyncWebServerRequest *);
   void handleConfigReset(AsyncWebServerRequest *);
   void handlePasswordReset(AsyncWebServerRequest *);
+  void asyncpause(const unsigned long);
 };
 
 extern webInterfaceAPI webAPI;

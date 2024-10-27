@@ -13,7 +13,7 @@
 #endif
 
 #ifndef COOKIEMAXAGE
-#define COOKIEMAXAGE 86400
+#define COOKIEMAXAGE 604800   // 1 week
 #endif
 
 class MatrixConfig; // Forward declaration
@@ -31,6 +31,7 @@ public:
   MatrixConfig *myConfig;
 
   bool _waitingForClientAction = false;
+  bool _exitConfig = false;
   bool _IPnotSetYet = false;
   void InitPages();
 
@@ -59,6 +60,7 @@ private:
   unsigned long remainingPortaltime();
   unsigned long _configPortalInterfaceStart = 0;
   bool isIp(const String &);
+  void asyncpause(const unsigned long);
 };
 
 const char htmlHeader[] =

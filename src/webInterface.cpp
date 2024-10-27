@@ -32,32 +32,24 @@ webInterface::webInterface(MatrixConfig *config, const char *password) {
 
 webInterface::~webInterface() { LOGDEBUG0("Webinterfce Destructor"); }
 
-
 extern MD_Parola Display;
 void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
- 
+
   LOGINFO0("Setting up Webserver");
 
   // We set this for later. Wnen there are no credentials set we want to keep
   // the captive portal open - ad infinitum
-  _IPnotSetYet = false;
 
-  // Check if we have WIFI confuration
-  for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
-    if (strlen(myConfig->WM_config.WiFi_Creds[i].wifi_ssid) > 0) {
-      _IPnotSetYet = false;
-    }
-  }
+  if (myConfig->MustConfigureUsingPortal || ALWAYS_START_WITH_PORTAL) {
 
-  if (_IPnotSetYet || ALWAYS_START_WITH_PORTAL) {
-    LOGINFO0("NO WiFi NEtworks set, we'll later keep the captive portal open");
     wifiMngr->setupWiFiAp(&(myConfig->WM_AP_IPconfig));
     server->reset();
     setConfigPortalPages();
     server->begin(); /// Webserver is now running....
     LOGINFO0("Wifi Manager done, following up with WebSrv");
-    wifiMngr
-        ->loopPortal(); /// Wait the configuration to be finished or timed out.
+    wifiMngr->loopPortal(
+        &myConfig->MustConfigureUsingPortal); /// Wait the configuration to be
+                                              /// finished or timed out.
   }
 
   myConfig->loadConfig(); // To make sure we are in sync
@@ -68,7 +60,7 @@ void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
   webAPI.requireAuthorization(true);
   //  setupWebSrv(wifiMngr);
   LOGDEBUG0("Starting the Webserver");
-  //server->begin(); /// Webserver is now running....
+  // server->begin(); /// Webserver is now running....
 
   if (server == nullptr) {
     LOGERROR0("WEBinterface: Server NULLPTR - halting execution");
@@ -111,7 +103,6 @@ void webInterface::setupWebSrv(WiFiManager *wifiMngr) {
 #endif
   server->begin();
   LOGINFO0("HTTP server started");
-
 }
 
 void webInterface::InitPages() {
@@ -128,7 +119,6 @@ void webInterface::InitPages() {
   DEF_HANDLE_CineMatrix_css;
   DEF_HANDLE_redCircleCrossed_svg;
   DEF_HANDLE_helpers_js;
-
 }
 
 void webInterface::handleNotFound(AsyncWebServerRequest *request) {
@@ -175,77 +165,82 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
   struct PositionStruct_t PositionEntry[] = {
       {PA_LEFT, "LEFT"}, {PA_CENTER, "CENTER"}, {PA_RIGHT, "RIGHT"}};
   struct EffectStruct_t EffectEntry[] = {
-    {PA_NO_EFFECT,
-     "No Effect"},       // "Used as a place filler executes no operation"
-    {PA_PRINT, "Print"}, //  "Text just appears (printed)"
-    {PA_SCROLL_UP, "Scroll Up"},     //  "Text scrolls up through the display"
-    {PA_SCROLL_DOWN, "Scroll Down"}, //  "Text scrolls down through the display"
-    {PA_SCROLL_LEFT,
-     "Scroll Left"}, //  "Text scrolls right to left on the display"
-    {PA_SCROLL_RIGHT,
-     "Scroll Right"}, //  "Text scrolls left to right on the display"
+      {PA_NO_EFFECT,
+       "No Effect"},       // "Used as a place filler executes no operation"
+      {PA_PRINT, "Print"}, //  "Text just appears (printed)"
+      {PA_SCROLL_UP, "Scroll Up"}, //  "Text scrolls up through the display"
+      {PA_SCROLL_DOWN,
+       "Scroll Down"}, //  "Text scrolls down through the display"
+      {PA_SCROLL_LEFT,
+       "Scroll Left"}, //  "Text scrolls right to left on the display"
+      {PA_SCROLL_RIGHT,
+       "Scroll Right"}, //  "Text scrolls left to right on the display"
 #if ENA_SPRITE
-    {PA_SPRITE, "Movie"}, //  "Text enters and exits using user defined sprite"
+      {PA_SPRITE,
+       "Movie"}, //  "Text enters and exits using user defined sprite"
 #endif
 #if ENA_MISC
-    {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
-                         //  from the right"
-    {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
-                         //  alternate direction (U/D)"
-    {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
-                         //  intensity setting"
-    {PA_DISSOLVE, "Dissolve"},  //  "Text dissolves from one display to another"
-    {PA_BLINDS, "Blinds"},      //  "Text is replaced behind vertical blinds"
-    {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
-#endif                          // ENA_MISC
+      {PA_SLICE, "Slice"}, //  "Text enters and exits a slice (column) at a time
+                           //  from the right"
+      {PA_MESH, "Mesh"},   //  "Text enters and exits in columns moving in
+                           //  alternate direction (U/D)"
+      {PA_FADE, "Fade"},   //  "Text enters and exits by fading from/to 0 and
+                           //  intensity setting"
+      {PA_DISSOLVE,
+       "Dissolve"},          //  "Text dissolves from one display to another"
+      {PA_BLINDS, "Blinds"}, //  "Text is replaced behind vertical blinds"
+      {PA_RANDOM, "Random dots"}, //  "Text enters and exits as random dots"
+#endif                            // ENA_MISC
 #if ENA_WIPE
-    {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
-                       // like it is wiped on and off"
-    {PA_WIPE_CURSOR,
-     "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
-#endif               // ENA_WIPES
+      {PA_WIPE, "Wipe"}, // "Text appears disappears one column at a time, looks
+                         // like it is wiped on and off"
+      {PA_WIPE_CURSOR,
+       "Wipe Cursor"}, //  "WIPE with a light bar ahead of the change"
+#endif                 // ENA_WIPES
 #if ENA_SCAN
-    {PA_SCAN_HORIZ,
-     "Scan Horizontal led"}, //  "Scan the LED column one at a time then
-                             //  appears/disappear at end"
-    {PA_SCAN_HORIZX,
-     "Scan Horizontal blank"}, //  "Scan a blank column through the text one
-                               //  column at a time then appears/disappear at
-                               //  end"
-    {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
-                                         //  then appears/disappear at end"
-    {PA_SCAN_VERTX,
-     "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
-                             //  a time then appears/disappear at end"
-#endif                       // ENA_SCAN
+      {PA_SCAN_HORIZ,
+       "Scan Horizontal led"}, //  "Scan the LED column one at a time then
+                               //  appears/disappear at end"
+      {PA_SCAN_HORIZX,
+       "Scan Horizontal blank"}, //  "Scan a blank column through the text one
+                                 //  column at a time then appears/disappear at
+                                 //  end"
+      {PA_SCAN_VERT, "Scan Vertical led"}, //  "Scan the LED row one at a time
+                                           //  then appears/disappear at end"
+      {PA_SCAN_VERTX,
+       "Scan Vertical blank"}, //  "Scan a blank row through the text one row at
+                               //  a time then appears/disappear at end"
+#endif                         // ENA_SCAN
 #if ENA_OPNCLS
-    {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
-                             // display},  towards the ends"
-    {PA_OPENING_CURSOR,
-     "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
-    {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
-                             // display}, towards the middle"
-    {PA_CLOSING_CURSOR,
-     "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
-#endif                  // ENA_OPNCLS
+      {PA_OPENING, "Opening"}, // "Appear and disappear from the center of the
+                               // display},  towards the ends"
+      {PA_OPENING_CURSOR,
+       "Opening Cursor"},      //  "OPENING with light bars ahead of the change"
+      {PA_CLOSING, "Closing"}, // "Appear and disappear from the ends of the
+                               // display}, towards the middle"
+      {PA_CLOSING_CURSOR,
+       "Closing Cursor"}, //  "CLOSING with light bars ahead of the change"
+#endif                    // ENA_OPNCLS
 #if ENA_SCR_DIA
-    {PA_SCROLL_UP_LEFT, "Scroll Up&Left"},  //  "Text moves in/out in a diagonal
-                                            //  path up and left (North East)"
-    {PA_SCROLL_UP_RIGHT, "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
-                                            //  path up and right (North West)"
-    {PA_SCROLL_DOWN_LEFT,
-     "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
-                         //  left (South East)"
-    {PA_SCROLL_DOWN_RIGHT,
-     "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
-                           //  right (North West)"
-#endif                     // ENA_SCR_DIA
+      {PA_SCROLL_UP_LEFT,
+       "Scroll Up&Left"}, //  "Text moves in/out in a diagonal
+                          //  path up and left (North East)"
+      {PA_SCROLL_UP_RIGHT,
+       "Scrol Up&Right"}, //  "Text moves in/out in a diagonal
+                          //  path up and right (North West)"
+      {PA_SCROLL_DOWN_LEFT,
+       "Scrol Down&Left"}, //  "Text moves in/out in a diagonal path down and
+                           //  left (South East)"
+      {PA_SCROLL_DOWN_RIGHT,
+       "Scroll Down&Right"}, //  "Text moves in/out in a diagonal path down and
+                             //  right (North West)"
+#endif                       // ENA_SCR_DIA
 #if ENA_GROW
-    {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
-                                //  from the top down"
-    {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
-                                // shrinks from the bottom up"}
-#endif                          // ENA_
+      {PA_GROW_UP, "Grow Up"},    //  "Text grows from the bottom up and shrinks
+                                  //  from the top down"
+      {PA_GROW_DOWN, "Grow Down"} // "Text grows from the top down and and
+                                  // shrinks from the bottom up"}
+#endif                            // ENA_
   };
 
   bool advancedReq = false;
@@ -436,11 +431,6 @@ void webInterface::handleIndex(AsyncWebServerRequest *request) {
                "value=\"Submit\"> </div>\n";
     message += "</form></div>\n";
 
-    message +=
-        "<div class=\"scriptbutton\" id=\"advancedbutton\"> <button "
-        "onclick=\"updateButton()\">Update</button><script>function "
-        "updateButton() {  location.replace(\"/update\")}</script></div>";
-
     message += "<div class=\"scriptbutton\"id=\"advancedbutton\"> <button "
                "onclick=\"indexButton()\">Back</button><script>function "
                "indexButton() "
@@ -489,7 +479,7 @@ void webInterface::handleSubmission(AsyncWebServerRequest *request) {
           if (!p->value().equals(myConfig->webPass)) {
             strncpy(myConfig->webPass, p->value().c_str(), WEBPASS_BUFF_SIZE);
             LOGINFO1("Changing web password to:", (myConfig->webPass));
-         
+
             reconf = true;
           }
         }
@@ -547,6 +537,8 @@ void webInterface::handleFile(AsyncWebServerRequest *request,
                               const char *mimetype,
                               const unsigned char *compressedData,
                               const size_t compressedDataLen) {
+  _waitingForClientAction =
+      true; // Any file request during captive portal should let it sit
   AsyncWebServerResponse *response =
       request->beginResponse(200, mimetype, compressedData, compressedDataLen);
   response->addHeader("Server", "ESP Async Web Server");
@@ -575,7 +567,9 @@ void webInterface::setConfigPortalPages() {
 
   server->on("/exitconfig", HTTP_GET, [&](AsyncWebServerRequest *request) {
     _waitingForClientAction = false;
-    request->redirect("/");
+    _exitConfig = true;
+    request->redirect("http://cinematrix");
+    asyncpause(200);
   });
 
   DEF_HANDLE_networkConfigPage_js;
@@ -810,4 +804,12 @@ bool webInterface::isIp(const String &str) {
 void webInterface::requireAuthorization(bool require) {
   _authRequired = require;
   return;
+}
+
+void webInterface::asyncpause(const unsigned long pause) {
+  unsigned long i = 0;
+  while (i++ < pause) {
+    delay(1);
+    yield();
+  }
 }

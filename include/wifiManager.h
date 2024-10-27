@@ -94,7 +94,7 @@ class WiFiManager : public WiFiMulti {
 public:
   WiFiManager(webInterface *);
   void setupWiFiAp(WiFi_AP_IPConfig *);
-  void loopPortal();
+  void loopPortal(bool *);
   uint8_t connectMultiWiFi(MatrixConfig *);
   char *getRFC952_hostname(const char *);
   char *getRFC952_hostname();

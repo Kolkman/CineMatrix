@@ -8,6 +8,9 @@
 #define DEFAULT_SPEED 75
 #endif
 #define DEFAULTPASS "1b3e6984034bb"
+#ifndef CONFIGFILENAME
+#define CONFIGFILENAME "/config.json"
+#endif
 
 #define WEBPASS_BUFF_SIZE 32
 
@@ -41,6 +44,7 @@ public:
   MatrixConfig();
   String passForSSID(String);
   char webPass[WEBPASS_BUFF_SIZE + 1];
+  bool MustConfigureUsingPortal;
   bool prepareFS();
   void setDefaults();
   bool loadConfig();  // load current config to disk (limited set of vallues)

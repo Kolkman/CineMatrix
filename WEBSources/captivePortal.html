@@ -31,7 +31,7 @@
                 var width = 100;
                 var id = setInterval(frame, time * 10);
                 function frame() {
-    
+
                     if (width <= 0) {
                         clearInterval(id);
                         i = 0;
@@ -53,7 +53,7 @@
                     return configjson.json()
                 })
                 .then(function (data) {
-                               time = data.timeout;
+                    time = data.timeout;
                     let wifinets = data.wifiNets;
                     console.log(wifinets);
                     if (Array.isArray(wifinets) && (wifinets.length != 0)) {
@@ -71,11 +71,11 @@
                     } else {
                         s = "no networks";
                     }
-                    s +=".";
+                    s += ".";
                     configuredNetworks.innerHTML = s;
                     time = data.timeout;
                     console.log("time set to: " + time);
-    
+
                     move(time);
                 })
                 .catch(function (err) {
@@ -89,7 +89,14 @@
         });
 
 
-
+        function exitConfigPortal() {
+            fetch("exitconfig");
+            exitmsg = document.getElementById("exitmessage")
+            exitmsg.innerHTML = "Redirecting to <a href=\"http://cinematrix/\">http://cinematrix/<a>. <br> Wait a few moments <br>(This might not work. Check the matrix display for an alternative URL)";
+            setTimeout(function () {
+                window.location.href = 'http://cinematrix/index.html';
+            }, 10000);
+        }
 
     </script>
 
@@ -100,32 +107,41 @@
     <div id="bodyBlock">
         <div class="configblock fullwidth">
             <div class="configurationMessage" style="font-size: larger;"">
-              The system is configured to connect to <div style="display:inline-block" id="configuredNetworks">no
-                    networks</div>
-            </div>
+              The system is configured to connect to <div style=" display:inline-block" id="configuredNetworks">no
+                networks</div>
         </div>
-        <div class="configblock fullwidth">
-            <div style="display:inline-block; vertical-align: top; ">
-                <div><a href="./networkSetup.html"><button class="btn">Configure Device</button></a></div>
-                <div><a href="/api/v1/resetPassword"><button class="btn">Reset Password</button></a></div>
+    </div>
+    <div class="configblock fullwidth">
+        <div style="display:inline-block; vertical-align: top; ">
+            <div><a href="./networkSetup.html"><button class="btn">Configure Device</button></a></div>
+            <div><a href="/api/v1/resetPassword"><button class="btn">Reset Password</button></a></div>
 
-                <div><a href="/api/v1/resetConfig"></a><button class="btn">Reset Confuguration</button></a></div>
+            <div><a href="/api/v1/resetConfig"><button class="btn">Reset Confuguration</button></a></div>
 
-                <div><a href="./exitconfig"><button class="btn">Exit</button></a></div>
-                <div  style="margin-top:80px;"><a href="./restart"><button class="btn" id="resetdiv">Restart Device</button></a></div>
-
-            </div>
-            <div id="portaltext" style="display:inline-block; vertical-align:top;">
-                <p> Instead choosing to configure you can wait press exit for the CineMatrix to exit and connect to the configured network.</p>
-                <p> Alternatively you let the portal time-out.If all else fails try restarting the device</p>
-            </div>
-            <div id="myProgress">
-                <div id="myBar"></div>
-            </div>
-        </div>
-        <div>
+            <div style="margin-top:20px;"><a href="./exitconfig"></a><button onclick="exitConfigPortal()" class="btn"
+                    id="exitbtn">Exit</button></a></div>
+            <div style="margin-top:80px;"><a href="./restart"><button class="btn" id="resetbtn">Restart
+                        Device</button></a></div>
 
         </div>
+        <div id="portaltext" style="display:inline-block; vertical-align:top;">
+            <p> Instead choosing to configure you can wait press exit for the CineMatrix to exit and connect to the
+                configured network.</p>
+            <p> Alternatively you let the portal time-out.If all else fails try restarting the device</p>
+
+            <div>
+                <p id="exitmessage"></p>
+            </div>
+
+        </div>
+
+        <div id="myProgress">
+            <div id="myBar"></div>
+        </div>
+    </div>
+    <div>
+
+    </div>
     </div>
 
 

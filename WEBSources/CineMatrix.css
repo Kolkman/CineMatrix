@@ -13,7 +13,7 @@
     --blockBackground: #bfcdda;
     --bgcolorHighlight2: #424d8c;
     --bgcolorHighlight3: #8a8595;
-    --buttonColor: rgb(177, 173, 211);
+    --buttonColor: rgb(23, 16, 85);
     --buttonHoverColor: rgb(63, 51, 103);
     --buttonPressColor: rgb(231, 114, 19);
     --boxShadow: 1px 4px 5px #777;
@@ -243,7 +243,7 @@ body {
 
     margin: 10px;
 
-    color: black;
+    color: (black);
 }
 
 
@@ -295,12 +295,23 @@ canvas {
 
 h1 {
     color: var(--baseColor);
-    background-color: var(--bgcolorHighlight);
+    background-color: black;
     font-size: x-large;
     padding: 10px;
     letter-spacing: .4em;
     margin-bottom: 1em;
     text-align: center;
+
+    font-family: "Sixtyfour Convergence", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+      "BLED" 0,
+      "SCAN" 0,
+      "XELA" 0,
+      "YELA" 0;
+  }
 
 }
 
@@ -347,7 +358,7 @@ div.switchlabel {
 }
 
 .btn {
-    color: var(--buttonColor);
+    color: var(--baseColor);
     width: 140px;
     font-size:11pt;
     text-align: center;
@@ -519,16 +530,21 @@ input {
     text-align: center;
 }
 
-#resetdiv {
+#resetbtn {
     color: var(--baseColor);
     background-color: rgba(255, 0, 0, 0.645);
 }
 
-#resetdiv:hover {
+#resetbtn:hover {
     background-color: var(--buttonHoverColor);
 }
-
-
+#exitbtn {
+    background-color: rgb(152, 84, 0);
+    color: var(--baseColor);
+}
+#exitmessage {
+    font-size: x-large;
+}
 
 .footermaterial {
     margin: 5ex;

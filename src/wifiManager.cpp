@@ -99,9 +99,11 @@ void WiFiManager::setupWiFiAp(WiFi_AP_IPConfig *WifiApIP) {
   return;
 }
 
-void WiFiManager::loopPortal() {
+void WiFiManager::loopPortal(bool *MustConfigureUsingPortal) {
   connect = false;
   bool TimedOut = true;
+
+  LOGDEBUG1("MustConfigureUsingPoral:", *MustConfigureUsingPortal);
 
   { // Start an asynchronous scan, we are bound to need it soon.
     int n = WiFi.scanComplete();
@@ -115,13 +117,14 @@ void WiFiManager::loopPortal() {
     LOGDEBUG0("Waiting until Client Actions");
   }
 
-  String toDisplay="WIFI: " + ApSSID + " / " + ApPass;
-  _configPortalStart=millis();
-  while (myInterface->_waitingForClientAction ||
-         millis() < _configPortalStart + CONFIGPORTAL_TIMEOUT) {
-
+  String toDisplay = "WIFI: " + ApSSID + " / " + ApPass;
+  _configPortalStart = millis();
+  while ( *MustConfigureUsingPortal  || (!myInterface->_exitConfig && (myInterface->_waitingForClientAction || 
+         millis() < _configPortalStart + CONFIGPORTAL_TIMEOUT))) {
+ 
     if (Display.displayAnimate())
-      Display.displayText( toDisplay.c_str(), PA_CENTER, 100, 0, PA_SCROLL_RIGHT, PA_SCROLL_LEFT);
+      Display.displayText(toDisplay.c_str(), PA_CENTER, 100, 0, PA_SCROLL_LEFT,
+                          PA_SCROLL_LEFT);
 
     yield();
   }
@@ -135,9 +138,8 @@ uint8_t WiFiManager::connectMultiWiFi(MatrixConfig *myConfig) {
 
   uint8_t status;
 #ifdef RFC952_HOSTNAME
-getRFC952_hostname(RFC952_HOSTNAME);
-LOGDEBUG1("Hostname set to ", RFC952_hostname);
-  
+  getRFC952_hostname(RFC952_HOSTNAME);
+  LOGDEBUG1("Hostname set to ", RFC952_hostname);
 
 #if (defined(ESP_ARDUINO_VERSION_MAJOR) && (ESP_ARDUINO_VERSION_MAJOR >= 2))
   WiFi.setHostname(RFC952_hostname);
@@ -173,8 +175,6 @@ LOGDEBUG1("Hostname set to ", RFC952_hostname);
     ESP.restart();
   }
 
-
-
   int i = 0;
   WiFi.mode(WIFI_STA);
 
@@ -204,9 +204,7 @@ LOGDEBUG1("Hostname set to ", RFC952_hostname);
   return status;
 }
 
-char *WiFiManager::getRFC952_hostname(){
-  return RFC952_hostname;
-}
+char *WiFiManager::getRFC952_hostname() { return RFC952_hostname; }
 
 char *WiFiManager::getRFC952_hostname(const char *iHostname)
 // From
@@ -234,7 +232,4 @@ char *WiFiManager::getRFC952_hostname(const char *iHostname)
   return RFC952_hostname;
 }
 
-IPAddress WiFiManager::getLocalIP(){
-  return WiFi.localIP();
-
-}
+IPAddress WiFiManager::getLocalIP() { return WiFi.localIP(); }

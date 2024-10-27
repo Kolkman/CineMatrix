@@ -11,7 +11,8 @@ all:include/pages/CineMatrix.css.h \
 	include/pages/configDone.html.h \
 	include/pages/redCircleCrossed.svg.h\
 	include/pages/WebLogin.html.h \
-	include/pages/helpers.js.h
+	include/pages/helpers.js.h \
+
 	@exec true 
 
 
@@ -36,11 +37,12 @@ include/pages/captivePortal.html.h: WEBSources/captivePortal.html
 include/pages/networkSetup.html.h: WEBsources/networkSetup.html
 	@./ProduceDefine.py $< text/html\;charset=UTF-8 > $@
 
-include/pages/networkConfigPage.js.h: WEBSources/networkConfigPage-min.js
+## the minifyer does something funny with JS
+include/pages/networkConfigPage.js.h: WEBSources/networkConfigPage.js
 	@./ProduceDefine.py $< text/javascript  > $@
 
 
-include/pages/helpers.js.h: WEBSources/helpers-min.js
+include/pages/helpers.js.h: WEBSources/helpers.js
 	@./ProduceDefine.py $< text/javascript  > $@
 
 

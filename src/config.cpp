@@ -8,12 +8,13 @@
 MatrixConfig::MatrixConfig() {
   LOGDEBUG0("MatrixConfig constructor")
   strncpy(webPass, DEFAULTPASS, WEBPASS_BUFF_SIZE);
-
+  MustConfigureUsingPortal = true;
   setDefaults();
 
   for (int i = 0; i < NUM_WIFI_CREDENTIALS; i++) {
-    *WM_config.WiFi_Creds[i].wifi_ssid = '\0';
-    *WM_config.WiFi_Creds[i].wifi_pw = '\0';
+    strcpy(WM_config.WiFi_Creds[i].wifi_ssid, "");
+    strcpy(WM_config.WiFi_Creds[i].wifi_pw, "");
+    ;
   }
   WM_AP_IPconfig._ap_static_ip = {192, 168, 100, 1};
   WM_AP_IPconfig._ap_static_gw = {192, 168, 100, 1};
@@ -34,6 +35,35 @@ bool MatrixConfig::prepareFS() {
       return true;
     }
   } else { // Initial mount success
+
+    if (_MatrixRSS_LOGLEVEL_ > 3) {
+      LOGDEBUG0("Showing filesystem root's content");
+
+      File root = LittleFS.open("/");
+      if (!root) {
+        Serial.println("- failed to open directory");
+
+      } else if (!root.isDirectory()) {
+        Serial.println(" - not a directory");
+
+      } else {
+        File file = root.openNextFile();
+        while (file) {
+          if (file.isDirectory()) {
+            Serial.print("  DIR : ");
+            Serial.println(file.name());
+
+          } else {
+            Serial.print("  FILE: ");
+            Serial.print(file.name());
+            Serial.print("\tSIZE: ");
+            Serial.println(file.size());
+          }
+          file = root.openNextFile();
+        }
+      }
+    }
+
     return true;
   }
 }
@@ -68,7 +98,8 @@ void MatrixConfig::setDefaults() {
 }
 
 bool MatrixConfig::loadConfig() {
-  File configFile = LittleFS.open("/config.json", "r");
+
+  File configFile = LittleFS.open(CONFIGFILENAME, "r");
   if (!configFile) {
     LOGERROR0("Failed to open config file");
     return false;
@@ -79,16 +110,17 @@ bool MatrixConfig::loadConfig() {
 
   DeserializationError parsingError =
       deserializeJson(jsonDocument, loggingStream);
-
-  if (_MatrixRSS_LOGLEVEL_ > 2) { // at DEBUG level
-    serializeJsonPretty(jsonDocument, Serial);
-  }
+  LOGDEBUG("\n");
 
   if (parsingError) {
 
     LOGERROR0("Failed to deserialize json config file");
     LOGERROR0(parsingError.c_str());
+    configFile.close();
     return false;
+  }
+  if (_MatrixRSS_LOGLEVEL_ > 2) { // at DEBUG level
+    serializeJsonPretty(jsonDocument, Serial);
   }
 
   for (int i = 0; i < 4; i++) {
@@ -112,6 +144,7 @@ bool MatrixConfig::loadConfig() {
   }
   if (jsonDocument["WifiCredential_ssid"]) {
     int i = 0;
+    MustConfigureUsingPortal = false;
     JsonArray j_ssid = jsonDocument["WifiCredential_ssid"];
     // using C++11 syntax (preferred):
     for (JsonVariant value : j_ssid) {
@@ -129,6 +162,7 @@ bool MatrixConfig::loadConfig() {
       strcpy(WM_config.WiFi_Creds[i].wifi_pw, value.as<const char *>());
       i++;
       if (i == NUM_WIFI_CREDENTIALS)
+
         break;
     }
   }
@@ -162,12 +196,13 @@ bool MatrixConfig::loadConfig() {
     strncpy(webPass, jsonDocument["webpass"], WEBPASS_BUFF_SIZE);
   if (!strcmp(webPass, DEFAULTPASS)) {
     LOGDEBUG("Config contains Default Pass");
-    strncpy(element[0].matrixtext,
-           "Verander eerst het passsword van de CineMatrix server",MATRIXTEXTLENGTH);
+    strncpy(element[0].matrixtext, "You must change the password",
+            MATRIXTEXTLENGTH);
     for (int i = 1; i < MAXTEXTELEMENTS; i++) {
       strcpy(element[i].matrixtext, "");
     }
   }
+  configFile.close();
   return true;
 }
 
@@ -212,22 +247,23 @@ bool MatrixConfig::saveConfig() {
     pw.add(WM_config.WiFi_Creds[i].wifi_pw);
   }
 
-  File configFile = LittleFS.open("/config.json", "w", true);
+  File configFile = LittleFS.open(CONFIGFILENAME, "w+");
   if (!configFile) {
-    Serial.println("Failed to open config file for writing");
+    LOGERROR0("Failed to open config file for writing");
     return false;
   }
 
+  LOGDEBUG0("Saveonfig writes file: ")
   WriteLoggingStream loggedFile(configFile, Serial);
 
   size_t writtenBytes = serializeJson(jsonDocument, loggedFile);
 
   if (writtenBytes == 0) {
-    Serial.println(F("Failed to write to file"));
+    LOGERROR0("Failed to write to file");
     return false;
   }
-  Serial.println("Bytes written: " + String(writtenBytes));
-
+  LOGINFO0("Bytes written: " + String(writtenBytes));
+  configFile.flush();
   configFile.close();
   return true;
 }

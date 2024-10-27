@@ -3,10 +3,13 @@
 // https://github.com/lbernstone/asyncUpdate/bb/master/AsyncUpdate.ino
 
 #include "webInterfaceAPI.h"
+#include "config.h"
 #include "debug.h"
 #include "pages/configDone.html.h"
 #include <ESPAsyncWebServer.h>
 #include <LittleFS.h>
+#include <cstdint>
+
 
 webInterfaceAPI webAPI;
 
@@ -14,6 +17,14 @@ webInterfaceAPI::webInterfaceAPI() {
   server = nullptr;
   content_len = 0;
   _authRequired = true;
+}
+
+void webInterfaceAPI::asyncpause(const unsigned long pause){
+  unsigned long i=0;
+  while(i++<pause){
+    delay(1);
+    yield();
+  }
 }
 
 void webInterfaceAPI::begin(MatrixWebServer *s, MatrixConfig *conf) {
@@ -114,14 +125,13 @@ void webInterfaceAPI::handleSet(AsyncWebServerRequest *request) {
       LOGDEBUG0("wifi_pw Found");
       for (int z = 0; z < NUM_WIFI_CREDENTIALS; z++) {
 
-        if (p->name().equals("wifi_pw" + String(z)) &&
-            p->value() != "") {
+        if (p->name().equals("wifi_pw" + String(z)) && p->value() != "") {
           myConfig->WM_config.WiFi_Creds[z].config_change =
               false; // administer pw has changed
           LOGDEBUG0("--- wifi_pw" + String(z));
           addjson(message, firstarg, "wifi_pw" + String(z), p->value());
-          strlcpy(myConfig->WM_config.WiFi_Creds[z].wifi_pw,
-                  p->value().c_str(), PASS_MAX_LEN);
+          strlcpy(myConfig->WM_config.WiFi_Creds[z].wifi_pw, p->value().c_str(),
+                  PASS_MAX_LEN);
           reconf = true;
         }
       }
@@ -139,16 +149,17 @@ void webInterfaceAPI::handleSet(AsyncWebServerRequest *request) {
   }
 
   if (safeandrestart) {
+    LOGDEBUG0("safeandrestart calling myConfig->saveConfig")
     myConfig->saveConfig();
-
+myConfig->loadConfig();
     AsyncWebServerResponse *response = request->beginResponse(
         200, "text/html;charset=UTF-8", configDone_html, configDone_html_len);
     response->addHeader("Content-Encoding", "gzip");
     response->addHeader("Access-Control-Allow-Origin",
                         "WM_HTTP_CORS_ALLOW_ALL");
     request->send(response);
-
-    delay(2000);
+    asyncpause(300);
+ 
     ESP.restart();
   }
 
@@ -203,9 +214,8 @@ void webInterfaceAPI::requireAuthorization(bool require) {
   return;
 }
 
-
 void webInterfaceAPI::handlePasswordReset(AsyncWebServerRequest *request) {
-if (_authRequired && !  server->authenticate(request) ) {
+  if (_authRequired && !server->authenticate(request)) {
     LOGINFO0("API not authenticed")
 
     return;
@@ -216,21 +226,22 @@ if (_authRequired && !  server->authenticate(request) ) {
   request->redirect("/");
 }
 
-
 void webInterfaceAPI::handleConfigReset(AsyncWebServerRequest *request) {
-if (_authRequired && !  server->authenticate(request) ) {
+  if (_authRequired && !server->authenticate(request)) {
     LOGINFO0("API not authenticed")
 
     return;
   }
 
-  LittleFS.remove("./config.json");
-   String message =
+  if (!LittleFS.remove(CONFIGFILENAME)) {
+    LOGERROR1(CONFIGFILENAME," could not be deleted");
+  }
+
+  String message =
       "<head><meta http-equiv=\"refresh\" content=\"2;url=/\">\n<meta "
       "name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" "
       "/><title>CineMatrix</title></head>";
   message += "<h1> Reseting Device ! </h1>";
   request->send(200, "text/html", message);
   ESP.restart();
-
 }
