@@ -9,7 +9,7 @@
 #endif
 #define DEFAULTPASS "1b3e6984034bb"
 #ifndef CONFIGFILENAME
-#define CONFIGFILENAME "/config.json"
+#define CONFIGFILENAME "/configv2.json"
 #endif
 
 #define WEBPASS_BUFF_SIZE 32
