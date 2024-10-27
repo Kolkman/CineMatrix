@@ -61,9 +61,10 @@ and borrows code fragment from [ESP32ressoMachine](https://kolkman.github.io/ESP
 
 
 ## Screenshots
-
-<img src="WEBSources/Screenshot-desktop.png" alt="Desktop Screeenshot" width=65% />
-<img src="WEBSources/Screenshot-iphone.png" alt="iPhone Screenshot" width=30% />
+- - - 
+![](./WEBSources/screenshot1.png)
+- - -  
+![](./WEBSources/screenshot2.png)
 
 
 
