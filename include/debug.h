@@ -20,7 +20,7 @@
 // 4: DEBUG: errors, warnings, informational and debug
 
 #ifndef _MatrixRSS_LOGLEVEL_
-  #define _MatrixRSS_LOGLEVEL_       4
+  #define _MatrixRSS_LOGLEVEL_       3
 #endif
 
 /////////////////////////////////////////////////////////
